@@ -11,6 +11,16 @@ final class MovieRepository: MovieRepositoryProtocol {
     
     private let session = URLSession.shared
 
+    func fetchNowPlayingMovies(page: Int) async throws -> [Movie] {
+        let urlString = "\(APIConfig.baseURL)/movie/now_playing?api_key=\(APIConfig.apiKey)&page=\(page)"
+        return try await performRequest(with: urlString)
+    }
+    
+    func fetchTopRatedMovies(page: Int) async throws -> [Movie] {
+        let urlString = "\(APIConfig.baseURL)/movie/top_rated?api_key=\(APIConfig.apiKey)&page=\(page)"
+        return try await performRequest(with: urlString)
+    }
+
     func fetchPopularMovies(page: Int) async throws -> [Movie] {
         let urlString = "\(APIConfig.baseURL)/movie/popular?api_key=\(APIConfig.apiKey)&page=\(page)"
         return try await performRequest(with: urlString)
