@@ -15,8 +15,8 @@ struct MovieView: View {
     
     var body: some View {
         AsyncImage(
-            url: URL(string: "https://image.tmdb.org/t/p/w500\(movie.overview)"),
-            transaction: Transaction(animation: .spring()) // Forces a smoother state update
+            url: URL(string: "https://image.tmdb.org/t/p/w500\(movie.posterPath)"),
+            transaction: Transaction(animation: .spring())
         ) { phase in
             switch phase {
             case .success(let image):
@@ -24,9 +24,9 @@ struct MovieView: View {
                     .resizable()
                     .scaledToFill()
             case .failure:
-                Color.App.midnightGrey // Show a solid color on failure
+                Color.App.midnightGrey
             case .empty:
-                ProgressView() // Show loading spinner
+                ProgressView()
             @unknown default:
                 EmptyView()
             }

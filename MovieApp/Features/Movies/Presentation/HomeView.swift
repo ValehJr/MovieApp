@@ -8,7 +8,12 @@
 import SwiftUI
 
 struct HomeView: View {
-    @StateObject var vm: HomeViewModel
+    @StateObject private var vm: HomeViewModel
+    
+    init(vm: HomeViewModel) {
+        _vm = StateObject(wrappedValue: vm)
+    }
+    
     var body: some View {
         ZStack {
             Color.App.skyCaptain.ignoresSafeArea()
@@ -31,7 +36,7 @@ struct HomeView: View {
             .frame(maxWidth: .infinity,alignment: .leading)
         }
         .task {
-            await vm.fetchTopRatedMovies()
+            await vm.load()
         }
         
     }
@@ -53,7 +58,7 @@ struct HomeView: View {
     var topRatedMovies: some View {
         ScrollView(.horizontal,showsIndicators: false) {
             LazyHGrid(rows: [GridItem(.flexible())],spacing: 30) {
-                ForEach(vm.topRatedMovies) { movie in
+                ForEach(vm.movies) { movie in
                     MovieView(movie: movie)
                 }
             }
@@ -63,19 +68,6 @@ struct HomeView: View {
 }
 
 #Preview {
-    let repo = MovieRepository()
-    
-    let search = SearchMoviesUseCase(repository: repo)
-    let popular = GetPopularMoviesUseCase(repository: repo)
-    let topRated = GetTopRatedMoviesUseCase(repository: repo)
-    let nowPlaying = GetNowPlayingMoviesUsecase(repository: repo)
-    
-    let vm = HomeViewModel(
-        searchUseCase: search,
-        popularUseCase: popular,
-        topRatedUseCase: topRated,
-        nowPlayingUseCase: nowPlaying
-    )
-    
-    return HomeView(vm: vm)
+    let container = DIContainer()
+    HomeView(vm: container.makeHomeViewModel())
 }
