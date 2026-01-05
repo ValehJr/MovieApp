@@ -36,3 +36,4 @@ fastlane/test_output
 *.tmp
 Secrets.plist
 Secret.plist
+**/Secret.plist
