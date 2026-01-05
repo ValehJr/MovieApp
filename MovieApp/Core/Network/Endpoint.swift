@@ -24,7 +24,6 @@ struct Endpoint {
         guard let url = components.url else { throw NetworkError.invalidURL }
         var request = URLRequest(url: url)
         request.httpMethod = method.rawValue
-        print(request)
         return request
     }
 }
