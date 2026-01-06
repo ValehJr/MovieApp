@@ -15,4 +15,28 @@ extension Endpoint {
             queryItems: [.init(name: "page", value: "\(page)")]
         )
     }
+    
+    static func topRatedMovies(page: Int) -> Endpoint {
+        Endpoint(
+            path: "/movie/top_rated",
+            method: .get,
+            queryItems: [.init(name: "page", value: "\(page)")]
+        )
+    }
+    
+    static func upcomingMovies(page: Int) -> Endpoint {
+        Endpoint(
+            path: "/movie/upcoming",
+            method: .get,
+            queryItems: [.init(name: "page", value: "\(page)")]
+        )
+    }
+    
+    static func nowPlayingMovies(page: Int) -> Endpoint {
+        Endpoint(
+            path: "/movie/now_playing",
+            method: .get,
+            queryItems: [.init(name: "page", value: "\(page)")]
+        )
+    }
 }

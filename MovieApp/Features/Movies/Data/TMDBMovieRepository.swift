@@ -8,14 +8,28 @@
 import Foundation
 
 final class TMDBMovieRepository: MovieRepository {
-//    func fetchNowPlayingMovies(page: Int) async throws -> [Movie] {
-//        <#code#>
-//    }
-//    
-//    func fetchTopRatedMovies(page: Int) async throws -> [Movie] {
-//        <#code#>
-//    }
-//    
+    func fetchNowPlayingMovies(page: Int) async throws -> [Movie] {
+        let response: MovieListResponseDTO = try await client.request(
+            .nowPlayingMovies(page: page)
+        )
+        return response.results.map { $0.toDomain() }
+    }
+    
+    func fetchTopRatedMovies(page: Int) async throws -> [Movie] {
+        let response: MovieListResponseDTO = try await client.request(
+            .topRatedMovies(page: page)
+        )
+        return response.results.map { $0.toDomain() }
+    }
+    
+    func fetchUpcomingMovies(page: Int) async throws -> [Movie] {
+        let response: MovieListResponseDTO = try await client.request(
+            .upcomingMovies(page: page)
+        )
+        return response.results.map { $0.toDomain() }
+    }
+
+    
 //    func searchMovies(query: String, page: Int) async throws -> [Movie] {
 //        <#code#>
 //    }

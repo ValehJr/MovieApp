@@ -60,10 +60,14 @@ struct HomeView: View {
             LazyHGrid(rows: [GridItem(.flexible())],spacing: 30) {
                 ForEach(vm.movies) { movie in
                     MovieView(movie: movie)
+                        .task {
+                            await vm.loadNextPage(movie)
+                        }
                 }
             }
         }
-        .frame(height: 144)
+        .frame(height: 210)
+
     }
 }
 

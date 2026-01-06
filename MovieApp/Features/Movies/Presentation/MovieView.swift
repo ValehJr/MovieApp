@@ -31,7 +31,6 @@ struct MovieView: View {
                 EmptyView()
             }
         }
-        .frame(width: 100, height: 144)
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }
     
