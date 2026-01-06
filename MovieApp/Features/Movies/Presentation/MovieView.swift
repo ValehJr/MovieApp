@@ -9,10 +9,6 @@ import SwiftUI
 
 struct MovieView: View {
     var movie: Movie
-    
-    // TMDB Base URL for images
-    private let imageBaseURL = "https://image.tmdb.org/t/p/w500"
-    
     var body: some View {
         AsyncImage(
             url: URL(string: "https://image.tmdb.org/t/p/w500\(movie.posterPath)"),
@@ -32,12 +28,6 @@ struct MovieView: View {
             }
         }
         .clipShape(RoundedRectangle(cornerRadius: 16))
-    }
-    
-    // A simple reusable placeholder to keep your UI consistent
-    private var placeholderView: some View {
-        RoundedRectangle(cornerRadius: 16)
-            .fill(Color.App.midnightGrey)
     }
 }
 

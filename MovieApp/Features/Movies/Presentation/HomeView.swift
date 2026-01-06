@@ -31,11 +31,19 @@ struct HomeView: View {
                 topRatedMovies
                     .padding(24)
                 
+                modeSelectionView
+                    .padding(.horizontal,24)
+                    .padding(.top,16)
+                
+                seletedModeMovies
+                    .padding(24)
+                
                 Spacer()
             }
             .frame(maxWidth: .infinity,alignment: .leading)
         }
         .task {
+            await vm.loadTopRatedMovies()
             await vm.load()
         }
         
@@ -58,7 +66,7 @@ struct HomeView: View {
     var topRatedMovies: some View {
         ScrollView(.horizontal,showsIndicators: false) {
             LazyHGrid(rows: [GridItem(.flexible())],spacing: 30) {
-                ForEach(vm.movies) { movie in
+                ForEach(vm.topRatedMovies) { movie in
                     MovieView(movie: movie)
                         .task {
                             await vm.loadNextPage(movie)
@@ -67,7 +75,25 @@ struct HomeView: View {
             }
         }
         .frame(height: 210)
-
+    }
+    
+    var modeSelectionView: some View {
+        ModeSelectionView(selectedMode: $vm.movieMode)
+    }
+    
+    var seletedModeMovies: some View {
+        ScrollView(.vertical,showsIndicators: false) {
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 100), spacing: 16)],
+                spacing: 30
+            ) {
+                ForEach(vm.movies) { movie in
+                    MovieView(movie: movie)
+                        .task {
+                            await vm.loadNextPage(movie)
+                        }
+                }
+            }
+        }
     }
 }
 

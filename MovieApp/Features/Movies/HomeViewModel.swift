@@ -11,9 +11,17 @@ import Combine
 @MainActor
 class HomeViewModel: ObservableObject {
     @Published var searchText: String = ""
+    @Published var topRatedMovies: [Movie] = []
     @Published var movies: [Movie] = []
     @Published private(set) var isLoading = false
     @Published private(set) var error: String?
+    @Published var movieMode: MovieMode = .nowPlaying {
+        didSet {
+            Task {
+                await load()
+            }
+        }
+    }
 
     private var topRatedPage = 1
     private var canLoadMore = true
@@ -30,8 +38,8 @@ class HomeViewModel: ObservableObject {
             return
         }
         
-        let thresholdIndex = movies.index(movies.endIndex, offsetBy: -5)
-        if movies.firstIndex(where: { $0.id == currentItem.id }) == thresholdIndex {
+        let thresholdIndex = topRatedMovies.index(topRatedMovies.endIndex, offsetBy: -5)
+        if topRatedMovies.firstIndex(where: { $0.id == currentItem.id }) == thresholdIndex {
             await loadNextPage()
         }
     }
@@ -47,7 +55,7 @@ class HomeViewModel: ObservableObject {
             if newTopRatedMovies.isEmpty {
                 canLoadMore = false
             } else {
-                movies.append(contentsOf: newTopRatedMovies)
+                topRatedMovies.append(contentsOf: newTopRatedMovies)
                 topRatedPage += 1
             }
         } catch {
@@ -55,18 +63,40 @@ class HomeViewModel: ObservableObject {
         }
     }
     
-    func load() async {
+    func loadTopRatedMovies() async {
         isLoading = true
         error = nil
         
         do {
-            movies = try await repository.fetchTopRatedMovies(page: topRatedPage)
+            topRatedMovies = try await repository.fetchTopRatedMovies(page: topRatedPage)
         } catch {
             self.error = error.localizedDescription
             print("Failed to fetch top rated movies: \(error)")
         }
         
         isLoading = false
+    }
+    
+    func load() async {
+        isLoading = true
+        error = nil
+        movies.removeAll()
+        
+        do {
+            switch movieMode {
+            case .nowPlaying:
+                movies = try await repository.fetchNowPlayingMovies(page: 1)
+            case .popular:
+                movies = try await repository.fetchPopularMovies(page: 1)
+            case .topRated:
+                movies = topRatedMovies
+            case .upcoming:
+                movies = try await repository.fetchUpcomingMovies(page: 1)
+            }
+        } catch {
+            self.error = error.localizedDescription
+            print("Failed to fetch movies: \(error)")
+        }
     }
     
 }
