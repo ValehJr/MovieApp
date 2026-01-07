@@ -20,9 +20,9 @@ struct MovieView: View {
                     .transition(.opacity.animation(.easeInOut))
             } else {
                 ZStack {
-                    Color.App.midnightGrey
+                    Color.App.glaucophobia
                     ProgressView()
-                        .tint(.white)
+                        .tint(.skyCaptain)
                 }
             }
         }

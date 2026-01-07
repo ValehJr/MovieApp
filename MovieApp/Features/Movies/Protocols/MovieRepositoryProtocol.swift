@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-protocol MovieRepository {
+protocol MovieRepositoryProtocol {
     func fetchPopularMovies(page: Int) async throws -> [Movie]
     func fetchNowPlayingMovies(page: Int) async throws -> [Movie]
     func fetchTopRatedMovies(page: Int) async throws -> [Movie]

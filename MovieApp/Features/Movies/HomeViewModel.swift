@@ -15,6 +15,7 @@ class HomeViewModel: ObservableObject {
     @Published private(set) var isLoading = false
     @Published private(set) var error: String?
     @Published private var states: [MovieMode: CategoryState] = [:]
+    @Published var selectedMovie: Movie?
     @Published var movieMode: MovieMode = .nowPlaying {
         didSet {
             Task { await load() }
@@ -28,9 +29,9 @@ class HomeViewModel: ObservableObject {
     private var topRatedPage = 1
     private var canLoadMore = true
     
-    private let repository: MovieRepository
+    private let repository: MovieRepositoryProtocol
     
-    init(repository: MovieRepository) {
+    init(repository: MovieRepositoryProtocol) {
         self.repository = repository
     }
     

@@ -17,4 +17,14 @@ extension View {
             .font(.custom(name.rawValue, size: size))
             .foregroundColor(foregroundColor)
     }
+    
+    func scrollViewModifier(
+        isSelected: Bool,
+        action: @escaping () -> Void
+    ) -> some View {
+        modifier(CustomScrollView(
+            isSelected: isSelected,
+            action: action)
+        )
+    }
 }

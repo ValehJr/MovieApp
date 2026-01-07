@@ -13,28 +13,19 @@ struct ModeSelectionView: View {
     @Binding var selectedMode: MovieMode
     
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            LazyHStack(spacing: 16) {
-                ForEach(modes) { mode in
-                    VStack(spacing: 12) {
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack(spacing: 16) {
+                    ForEach(modes) { mode in
                         Text(mode.title)
-                            .appFont(name: mode == selectedMode ? .poppinsSemiBold : .poppinsRegular, size: 14,foregroundColor: .white)
-                        Rectangle()
-                            .frame(height: 4)
-                            .foregroundStyle(mode == selectedMode ? .glaucophobia : .clear)
-                    }
-
-                    .onTapGesture {
-                        withAnimation(.spring()) {
-                            selectedMode = mode
-                        }
+                            .scrollViewModifier(isSelected: mode == selectedMode) {
+                                selectedMode = mode
+                            }
                     }
                 }
             }
+            .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
+            .frame(height: 40)
         }
-        .scrollBounceBehavior(.basedOnSize,axes:.horizontal)
-        .frame(height: 40)
-    }
 }
 
 #Preview {

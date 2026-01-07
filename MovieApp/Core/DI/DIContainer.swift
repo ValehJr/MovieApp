@@ -8,14 +8,11 @@
 import Foundation
 
 final class DIContainer {
-
-    // MARK: - Core
     lazy var networkClient: NetworkClient = {
         URLSessionNetworkClient()
     }()
 
-    // MARK: - Repositories
-    lazy var movieRepository: MovieRepository = {
+    lazy var movieRepository: MovieRepositoryProtocol = {
         TMDBMovieRepository(client: networkClient)
     }()
 
