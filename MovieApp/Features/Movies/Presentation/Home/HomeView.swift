@@ -81,23 +81,27 @@ struct HomeView: View {
     }
     
     var seletedModeMovies: some View {
-        ScrollView(.vertical,showsIndicators: false) {
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 100), spacing: 16)],
-                      spacing: 30
-            ) {
-                ForEach(vm.currentMovies) { movie in
-                    MovieView(movie: movie)
-                        .task {
-                            guard movie == vm.currentMovies.last,
-                                  !vm.isLoading
-                            else { return }
-                            
-                            await vm.loadNextPage()
+            ScrollView(.vertical, showsIndicators: false) {
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 90), spacing: 16)], spacing: 30) {
+                    ForEach(vm.currentMovies) { movie in
+                        NavigationLink(value: movie) {
+                            MovieView(movie: movie)
+                                .task {
+                                    guard movie == vm.currentMovies.last, !vm.isLoading else { return }
+                                    await vm.loadNextPage()
+                                }
                         }
+                    }
                 }
+                .padding()
             }
-        }
-        .id(vm.movieMode)
+            .navigationDestination(for: Movie.self) { movie in
+                let container = DIContainer()
+                let detailsVM = container.makeMovieDetailsViewModel(movieID: movie.id)
+                MovieDetailsView(vm: detailsVM)
+            }
+            .id(vm.movieMode)
+            .background(Color.skyCaptain)
     }
 }
 

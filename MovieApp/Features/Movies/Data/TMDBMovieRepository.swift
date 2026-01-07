@@ -7,43 +7,42 @@
 
 import Foundation
 
-final class TMDBMovieRepository: MovieRepository {
+final class TMDBMovieRepository: MovieRepositoryProtocol {
+    private let client: NetworkClient
+
+    init(client: NetworkClient) {
+        self.client = client
+    }
+    
     func fetchNowPlayingMovies(page: Int) async throws -> [Movie] {
-        let response: MovieListResponseDTO = try await client.request(
+        let response: MovieListResponse = try await client.request(
             .nowPlayingMovies(page: page)
         )
         return response.results.map { $0.toDomain() }
     }
     
     func fetchTopRatedMovies(page: Int) async throws -> [Movie] {
-        let response: MovieListResponseDTO = try await client.request(
+        let response: MovieListResponse = try await client.request(
             .topRatedMovies(page: page)
         )
         return response.results.map { $0.toDomain() }
     }
     
     func fetchUpcomingMovies(page: Int) async throws -> [Movie] {
-        let response: MovieListResponseDTO = try await client.request(
+        let response: MovieListResponse = try await client.request(
             .upcomingMovies(page: page)
         )
         return response.results.map { $0.toDomain() }
     }
-
     
-//    func searchMovies(query: String, page: Int) async throws -> [Movie] {
-//        <#code#>
-//    }
-    
-    private let client: NetworkClient
-
-    init(client: NetworkClient) {
-        self.client = client
-    }
-
     func fetchPopularMovies(page: Int) async throws -> [Movie] {
-        let response: MovieListResponseDTO = try await client.request(
+        let response: MovieListResponse = try await client.request(
             .popularMovies(page: page)
         )
         return response.results.map { $0.toDomain() }
     }
+
+//    func searchMovies(query: String, page: Int) async throws -> [Movie] {
+//        <#code#>
+//    }
 }

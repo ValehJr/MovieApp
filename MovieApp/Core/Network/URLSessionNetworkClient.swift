@@ -18,6 +18,7 @@ final class URLSessionNetworkClient: NetworkClient {
         let request = try endpoint.makeRequest()
         let (data, response) = try await session.data(for: request)
         try ResponseValidator.validate(response)
-        return try JSONDecoder.tmdb.decode(T.self, from: data)
+        let decoder = JSONDecoder()
+        return try decoder.decode(T.self, from: data)
     }
 }

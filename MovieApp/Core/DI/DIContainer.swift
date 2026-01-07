@@ -15,9 +15,17 @@ final class DIContainer {
     lazy var movieRepository: MovieRepositoryProtocol = {
         TMDBMovieRepository(client: networkClient)
     }()
+    
+    lazy var movieDetailsRepository: MovieDetailsProtocol = {
+        TMDBMovieDetails(client: networkClient)
+    }()
 
     // MARK: - ViewModels
     func makeHomeViewModel() -> HomeViewModel {
         HomeViewModel(repository: movieRepository)
+    }
+    
+    func makeMovieDetailsViewModel(movieID: Int) -> MovieDetailsViewModel {
+        MovieDetailsViewModel(movieID: movieID,repository: movieDetailsRepository)
     }
 }

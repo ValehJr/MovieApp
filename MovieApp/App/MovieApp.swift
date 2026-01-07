@@ -13,7 +13,9 @@ struct MovieAppApp: App {
     
     var body: some Scene {
         WindowGroup {
-            HomeView(vm: container.makeHomeViewModel())
+            NavigationStack {
+                HomeView(vm: container.makeHomeViewModel())
+            }
         }
     }
 }

@@ -15,6 +15,13 @@ struct MovieDTO: Codable {
     let posterPath: String?
     let backdropPath: String?
     let releaseDate: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case id, title, overview
+        case posterPath = "poster_path"
+        case backdropPath = "backdrop_path"
+        case releaseDate = "release_date"
+    }
 }
 
 extension MovieDTO {

@@ -7,6 +7,6 @@
 
 import Foundation
 
-struct MovieListResponseDTO: Codable {
+struct MovieListResponse: Codable {
     let results: [MovieDTO]
 }
