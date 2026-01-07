@@ -38,7 +38,6 @@ struct HomeView: View {
                 seletedModeMovies
                     .padding(24)
                 
-                Spacer()
             }
             .frame(maxWidth: .infinity,alignment: .leading)
         }
@@ -84,16 +83,21 @@ struct HomeView: View {
     var seletedModeMovies: some View {
         ScrollView(.vertical,showsIndicators: false) {
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 100), spacing: 16)],
-                spacing: 30
+                      spacing: 30
             ) {
-                ForEach(vm.movies) { movie in
+                ForEach(vm.currentMovies) { movie in
                     MovieView(movie: movie)
                         .task {
-                            await vm.loadNextPage(movie)
+                            guard movie == vm.currentMovies.last,
+                                  !vm.isLoading
+                            else { return }
+                            
+                            await vm.loadNextPage()
                         }
                 }
             }
         }
+        .id(vm.movieMode)
     }
 }
 

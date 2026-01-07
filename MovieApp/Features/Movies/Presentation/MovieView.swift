@@ -9,25 +9,28 @@ import SwiftUI
 
 struct MovieView: View {
     var movie: Movie
+    @StateObject private var loader = ImageLoader()
+
     var body: some View {
-        AsyncImage(
-            url: URL(string: "https://image.tmdb.org/t/p/w500\(movie.posterPath)"),
-            transaction: Transaction(animation: .spring())
-        ) { phase in
-            switch phase {
-            case .success(let image):
-                image
+        ZStack {
+            if let image = loader.image {
+                Image(uiImage: image)
                     .resizable()
                     .scaledToFill()
-            case .failure:
-                Color.App.midnightGrey
-            case .empty:
-                ProgressView()
-            @unknown default:
-                EmptyView()
+                    .transition(.opacity.animation(.easeInOut))
+            } else {
+                ZStack {
+                    Color.App.midnightGrey
+                    ProgressView()
+                        .tint(.white)
+                }
             }
         }
+        .aspectRatio(2/3, contentMode: .fit)
         .clipShape(RoundedRectangle(cornerRadius: 16))
+        .onAppear {
+            loader.load(urlString: "https://image.tmdb.org/t/p/w500\(movie.posterPath)")
+        }
     }
 }
 

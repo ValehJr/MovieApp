@@ -12,17 +12,19 @@ import Combine
 class HomeViewModel: ObservableObject {
     @Published var searchText: String = ""
     @Published var topRatedMovies: [Movie] = []
-    @Published var movies: [Movie] = []
     @Published private(set) var isLoading = false
     @Published private(set) var error: String?
+    @Published private var states: [MovieMode: CategoryState] = [:]
     @Published var movieMode: MovieMode = .nowPlaying {
         didSet {
-            Task {
-                await load()
-            }
+            Task { await load() }
         }
     }
-
+    
+    var currentMovies: [Movie] {
+        states[movieMode]?.movies ?? []
+    }
+    
     private var topRatedPage = 1
     private var canLoadMore = true
     
@@ -34,17 +36,17 @@ class HomeViewModel: ObservableObject {
     
     func loadNextPage(_ currentItem: Movie?) async {
         guard let currentItem else {
-            await loadNextPage()
+            await loadNextPageForTopRated()
             return
         }
         
         let thresholdIndex = topRatedMovies.index(topRatedMovies.endIndex, offsetBy: -5)
         if topRatedMovies.firstIndex(where: { $0.id == currentItem.id }) == thresholdIndex {
-            await loadNextPage()
+            await loadNextPageForTopRated()
         }
     }
     
-    private func loadNextPage() async {
+    private func loadNextPageForTopRated() async {
         guard canLoadMore, !isLoading else { return }
         isLoading = true
         defer { isLoading = false }
@@ -55,7 +57,8 @@ class HomeViewModel: ObservableObject {
             if newTopRatedMovies.isEmpty {
                 canLoadMore = false
             } else {
-                topRatedMovies.append(contentsOf: newTopRatedMovies)
+                let combined = topRatedMovies + newTopRatedMovies
+                topRatedMovies = combined.uniqued()
                 topRatedPage += 1
             }
         } catch {
@@ -78,25 +81,55 @@ class HomeViewModel: ObservableObject {
     }
     
     func load() async {
-        isLoading = true
-        error = nil
-        movies.removeAll()
-        
-        do {
-            switch movieMode {
-            case .nowPlaying:
-                movies = try await repository.fetchNowPlayingMovies(page: 1)
-            case .popular:
-                movies = try await repository.fetchPopularMovies(page: 1)
-            case .topRated:
-                movies = topRatedMovies
-            case .upcoming:
-                movies = try await repository.fetchUpcomingMovies(page: 1)
-            }
-        } catch {
-            self.error = error.localizedDescription
-            print("Failed to fetch movies: \(error)")
+        if states[movieMode] == nil {
+            isLoading = true
+            states[movieMode] = CategoryState()
+            await fetchMovies(for: movieMode)
         }
+        isLoading = false
     }
     
+    func loadNextPage() async {
+        guard !isLoading, let currentState = states[movieMode], currentState.canLoadMore else { return }
+        
+        isLoading = true
+        defer { isLoading = false }
+        await fetchMovies(for: movieMode, isNextPage: true)
+    }
+    
+    private func fetchMovies(for mode: MovieMode, isNextPage: Bool = false) async {
+        var state = states[mode] ?? CategoryState()
+        let pageToFetch = isNextPage ? state.page + 1 : 1
+        
+        do {
+            let newMovies: [Movie]
+            switch mode {
+            case .nowPlaying: newMovies = try await repository.fetchNowPlayingMovies(page: pageToFetch)
+            case .popular:    newMovies = try await repository.fetchPopularMovies(page: pageToFetch)
+            case .upcoming:   newMovies = try await repository.fetchUpcomingMovies(page: pageToFetch)
+            case .topRated:   newMovies = try await repository.fetchTopRatedMovies(page: pageToFetch)
+            }
+            
+            if newMovies.isEmpty {
+                state.canLoadMore = false
+            } else {
+                if isNextPage {
+                    let combined = state.movies + newMovies
+                    state.movies = combined.uniqued()
+                    state.page += 1
+                } else {
+                    state.movies = newMovies.uniqued()
+                }
+            }
+            states[mode] = state
+        } catch {
+            self.error = error.localizedDescription
+        }
+    }
+}
+
+struct CategoryState {
+    var movies: [Movie] = []
+    var page: Int = 1
+    var canLoadMore: Bool = true
 }
