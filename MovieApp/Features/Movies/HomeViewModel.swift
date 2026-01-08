@@ -15,10 +15,9 @@ class HomeViewModel: ObservableObject {
     @Published private(set) var isLoading = false
     @Published private(set) var error: String?
     @Published private var states: [MovieMode: CategoryState] = [:]
-    @Published var selectedMovie: Movie?
     @Published var movieMode: MovieMode = .nowPlaying {
         didSet {
-            Task { await load() }
+            Task { await loadMovies() }
         }
     }
     
@@ -35,97 +34,74 @@ class HomeViewModel: ObservableObject {
         self.repository = repository
     }
     
-    func loadNextPage(_ currentItem: Movie?) async {
-        guard let currentItem else {
-            await loadNextPageForTopRated()
-            return
-        }
+    func loadTopRated(nextPage: Bool = false) async {
+        guard !isLoading, canLoadMore else { return }
         
-        let thresholdIndex = topRatedMovies.index(topRatedMovies.endIndex, offsetBy: -5)
-        if topRatedMovies.firstIndex(where: { $0.id == currentItem.id }) == thresholdIndex {
-            await loadNextPageForTopRated()
-        }
-    }
-    
-    private func loadNextPageForTopRated() async {
-        guard canLoadMore, !isLoading else { return }
         isLoading = true
         defer { isLoading = false }
         
-        do {
-            let newTopRatedMovies = try await repository.fetchTopRatedMovies(page: topRatedPage + 1)
-            
-            if newTopRatedMovies.isEmpty {
-                canLoadMore = false
-            } else {
-                let combined = topRatedMovies + newTopRatedMovies
-                topRatedMovies = combined.uniqued()
-                topRatedPage += 1
-            }
-        } catch {
-            canLoadMore = false
-        }
-    }
-    
-    func loadTopRatedMovies() async {
-        isLoading = true
-        error = nil
+        let page = nextPage ? topRatedPage + 1 : 1
         
         do {
-            topRatedMovies = try await repository.fetchTopRatedMovies(page: topRatedPage)
+            let movies = try await repository.fetchTopRatedMovies(page: page)
+            
+            if page == 1 {
+                topRatedMovies = movies
+            } else {
+                topRatedMovies.append(contentsOf: movies)
+            }
+            
+            canLoadMore = movies.count > 0
+            topRatedPage = page
         } catch {
             self.error = error.localizedDescription
-            print("Failed to fetch top rated movies: \(error)")
         }
-        
-        isLoading = false
     }
     
-    func load() async {
-        if states[movieMode] == nil {
-            isLoading = true
-            states[movieMode] = CategoryState()
-            await fetchMovies(for: movieMode)
+    private func fetch(for mode: MovieMode, page: Int) async throws -> [Movie] {
+        switch mode {
+        case .nowPlaying:
+            return try await repository.fetchNowPlayingMovies(page: page)
+        case .popular:
+            return try await repository.fetchPopularMovies(page: page)
+        case .upcoming:
+            return try await repository.fetchUpcomingMovies(page: page)
+        case .topRated:
+            return try await repository.fetchTopRatedMovies(page: page)
         }
-        isLoading = false
     }
     
-    func loadNextPage() async {
-        guard !isLoading, let currentState = states[movieMode], currentState.canLoadMore else { return }
+    func loadMovies(nextPage: Bool = false) async {
+        var state = states[movieMode] ?? CategoryState()
         
-        isLoading = true
-        defer { isLoading = false }
-        await fetchMovies(for: movieMode, isNextPage: true)
-    }
-    
-    private func fetchMovies(for mode: MovieMode, isNextPage: Bool = false) async {
-        var state = states[mode] ?? CategoryState()
-        let pageToFetch = isNextPage ? state.page + 1 : 1
+        guard !state.isLoading, state.canLoadMore else { return }
+        
+        state.isLoading = true
+        state.error = nil
+        states[movieMode] = state
+        
+        let page = nextPage ? state.page + 1 : 1
         
         do {
-            let newMovies: [Movie]
-            switch mode {
-            case .nowPlaying: newMovies = try await repository.fetchNowPlayingMovies(page: pageToFetch)
-            case .popular:    newMovies = try await repository.fetchPopularMovies(page: pageToFetch)
-            case .upcoming:   newMovies = try await repository.fetchUpcomingMovies(page: pageToFetch)
-            case .topRated:   newMovies = try await repository.fetchTopRatedMovies(page: pageToFetch)
-            }
+            let newMovies: [Movie] = try await fetch(for: movieMode, page: page)
             
             if newMovies.isEmpty {
                 state.canLoadMore = false
             } else {
-                if isNextPage {
-                    let combined = state.movies + newMovies
-                    state.movies = combined.uniqued()
-                    state.page += 1
+                if nextPage {
+                    state.movies.append(contentsOf: newMovies)
+                    state.page = page
                 } else {
-                    state.movies = newMovies.uniqued()
+                    state.movies = newMovies
+                    state.page = 1
                 }
             }
-            states[mode] = state
         } catch {
-            self.error = error.localizedDescription
+            state.error = error.localizedDescription
         }
+        
+        state.isLoading = false
+        states[movieMode] = state
     }
 }
 
@@ -133,4 +109,6 @@ struct CategoryState {
     var movies: [Movie] = []
     var page: Int = 1
     var canLoadMore: Bool = true
+    var isLoading: Bool = false
+    var error: String?
 }

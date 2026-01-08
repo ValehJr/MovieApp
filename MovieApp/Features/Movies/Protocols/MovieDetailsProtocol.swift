@@ -8,5 +8,5 @@
 protocol MovieDetailsProtocol {
     func fetchMovieDetails(id: Int) async throws -> MovieDetails
     func fetchMovieCredits(id: Int) async throws -> [MovieCast]
-    func fetchMovieReviews(id: Int) async throws -> [MovieReviews]
+    func fetchMovieReviews(id: Int, page: Int) async throws -> [MovieReviews]
 }

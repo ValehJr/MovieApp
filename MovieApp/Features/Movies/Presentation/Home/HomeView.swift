@@ -42,8 +42,8 @@ struct HomeView: View {
             .frame(maxWidth: .infinity,alignment: .leading)
         }
         .task {
-            await vm.loadTopRatedMovies()
-            await vm.load()
+            await vm.loadTopRated()
+            await vm.loadMovies()
         }
         
     }
@@ -67,8 +67,12 @@ struct HomeView: View {
             LazyHGrid(rows: [GridItem(.flexible())],spacing: 30) {
                 ForEach(vm.topRatedMovies) { movie in
                     MovieView(movie: movie)
-                        .task {
-                            await vm.loadNextPage(movie)
+                        .onAppear {
+                            if movie == vm.topRatedMovies.last {
+                                Task {
+                                    await vm.loadTopRated(nextPage: true)
+                                }
+                            }
                         }
                 }
             }
@@ -81,27 +85,30 @@ struct HomeView: View {
     }
     
     var seletedModeMovies: some View {
-            ScrollView(.vertical, showsIndicators: false) {
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: 90), spacing: 16)], spacing: 30) {
-                    ForEach(vm.currentMovies) { movie in
-                        NavigationLink(value: movie) {
-                            MovieView(movie: movie)
-                                .task {
-                                    guard movie == vm.currentMovies.last, !vm.isLoading else { return }
-                                    await vm.loadNextPage()
+        ScrollView(.vertical, showsIndicators: false) {
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 90), spacing: 16)], spacing: 30) {
+                ForEach(vm.currentMovies) { movie in
+                    NavigationLink(value: movie) {
+                        MovieView(movie: movie)
+                            .onAppear {
+                                if movie == vm.currentMovies.last {
+                                    Task {
+                                        await vm.loadMovies(nextPage: true)
+                                    }
                                 }
-                        }
+                            }
                     }
                 }
-                .padding()
             }
-            .navigationDestination(for: Movie.self) { movie in
-                let container = DIContainer()
-                let detailsVM = container.makeMovieDetailsViewModel(movieID: movie.id)
-                MovieDetailsView(vm: detailsVM)
-            }
-            .id(vm.movieMode)
-            .background(Color.skyCaptain)
+            .padding()
+        }
+        .navigationDestination(for: Movie.self) { movie in
+            let container = DIContainer()
+            let detailsVM = container.makeMovieDetailsViewModel(movieID: movie.id)
+            MovieDetailsView(vm: detailsVM)
+        }
+        .id(vm.movieMode)
+        .background(Color.skyCaptain)
     }
 }
 

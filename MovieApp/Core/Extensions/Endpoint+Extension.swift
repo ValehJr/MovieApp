@@ -56,7 +56,7 @@ extension Endpoint {
         )
     }
     
-    static func movieReviews(id: Int) -> Endpoint {
+    static func movieReviews(id: Int,page: Int) -> Endpoint {
         Endpoint(
             path: "/movie/\(id)/reviews",
             method: .get,

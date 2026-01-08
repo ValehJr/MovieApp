@@ -43,7 +43,7 @@ class MovieDetailsViewModel: ObservableObject {
         error = nil
         
         do {
-            movieReviews = try await repository.fetchMovieReviews(id: movieID)
+            movieReviews = try await repository.fetchMovieReviews(id: movieID,page: 1)
         } catch {
             self.error = error.localizedDescription
             print("Faild to fetch reviews of the movie: \(error)")
