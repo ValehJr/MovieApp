@@ -21,8 +21,9 @@ struct RemoteImageView: View {
                     .transition(.opacity.animation(.easeInOut))
             } else {
                 ZStack {
-                    Color.App.glaucophobia
-                    ProgressView().tint(.skyCaptain)
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(Color.white.opacity(0.1))
+                        .shimmer()
                 }
             }
         }

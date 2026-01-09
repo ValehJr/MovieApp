@@ -15,10 +15,14 @@ class MovieDetailsViewModel: ObservableObject {
     @Published var movieCast: [MovieCast]?
     @Published private(set) var error: String?
     @Published var selectedDetail: DetailsInformation = .aboutMovie
+    @Published private(set) var isLoading = false
     
     let movieDetailTypes: [DetailsInformation] = .init(DetailsInformation.allCases)
     private let movieID: Int
     private let repository: MovieDetailsProtocol
+    
+    private var reviewPage: Int = 1
+    private var canLoadMore = true
     
     init(
         movieID: Int,
@@ -39,14 +43,27 @@ class MovieDetailsViewModel: ObservableObject {
         }
     }
     
-    func fetchMovieReviews() async {
-        error = nil
+    func fetchReviews(nextPage: Bool = false) async {
+        guard !isLoading, canLoadMore else { return }
+        
+        isLoading = true
+        defer { isLoading = false }
+        
+        let page = nextPage ? reviewPage + 1 : 1
         
         do {
-            movieReviews = try await repository.fetchMovieReviews(id: movieID,page: 1)
+            let movies = try await repository.fetchMovieReviews(id: movieID,page: reviewPage)
+            
+            if page == 1 {
+                movieReviews = movies
+            } else {
+                movieReviews.append(contentsOf: movies)
+            }
+            
+            canLoadMore = movies.count > 0
+            reviewPage = page
         } catch {
             self.error = error.localizedDescription
-            print("Faild to fetch reviews of the movie: \(error)")
         }
     }
     

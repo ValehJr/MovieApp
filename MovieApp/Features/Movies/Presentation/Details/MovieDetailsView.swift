@@ -42,7 +42,7 @@ struct MovieDetailsView: View {
         .task {
             await vm.fetchMovieDetails()
             await vm.fetchMovieCredits()
-            await vm.fetchMovieReviews()
+            await vm.fetchReviews()
         }
     }
     
@@ -177,6 +177,13 @@ struct MovieDetailsView: View {
                 } else {
                     ForEach(vm.movieReviews) { review in
                         MovieReview(review: review)
+                            .onAppear {
+                                if review == vm.movieReviews.last {
+                                    Task {
+                                        await vm.fetchReviews(nextPage: true)
+                                    }
+                                }
+                            }
                         Rectangle()
                             .frame(height: 1)
                             .foregroundStyle(.lilacFields)

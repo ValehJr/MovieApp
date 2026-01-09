@@ -27,4 +27,8 @@ extension View {
             action: action)
         )
     }
+    
+    func shimmer() -> some View {
+        modifier(ShimmerModifier())
+    }
 }
