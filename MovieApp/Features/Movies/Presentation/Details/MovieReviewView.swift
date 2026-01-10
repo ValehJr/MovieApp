@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct MovieReview: View {
+struct MovieReviewView: View {
     let review: MovieReviews
     var body: some View {
         VStack(alignment:.leading,spacing:4) {
@@ -28,5 +28,5 @@ struct MovieReview: View {
 }
 
 #Preview {
-    MovieReview(review: .init(id: "1",author: "Valeh", content: "Hello World"))
+    MovieReviewView(review: .init(id: "1",author: "Valeh", content: "Hello World"))
 }

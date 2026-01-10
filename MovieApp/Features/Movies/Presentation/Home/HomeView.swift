@@ -66,14 +66,16 @@ struct HomeView: View {
         ScrollView(.horizontal,showsIndicators: false) {
             LazyHGrid(rows: [GridItem(.flexible())],spacing: 30) {
                 ForEach(vm.topRatedMovies) { movie in
-                    MovieView(movie: movie)
-                        .onAppear {
-                            if movie == vm.topRatedMovies.last {
-                                Task {
-                                    await vm.loadTopRated(nextPage: true)
+                    NavigationLink(value: movie) {
+                        MovieView(movie: movie)
+                            .onAppear {
+                                if movie == vm.topRatedMovies.last {
+                                    Task {
+                                        await vm.loadTopRated(nextPage: true)
+                                    }
                                 }
                             }
-                        }
+                    }
                 }
             }
         }
@@ -101,11 +103,6 @@ struct HomeView: View {
                 }
             }
             .padding()
-        }
-        .navigationDestination(for: Movie.self) { movie in
-            let container = DIContainer()
-            let detailsVM = container.makeMovieDetailsViewModel(movieID: movie.id)
-            MovieDetailsView(vm: detailsVM)
         }
         .id(vm.movieMode)
         .background(Color.skyCaptain)

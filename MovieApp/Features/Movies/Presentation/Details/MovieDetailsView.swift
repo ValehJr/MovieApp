@@ -9,6 +9,7 @@ import SwiftUI
 
 struct MovieDetailsView: View {
     @StateObject private var vm: MovieDetailsViewModel
+    @Environment(\.dismiss) private var dismiss
     
     init(vm: MovieDetailsViewModel) {
         _vm = StateObject(wrappedValue: vm)
@@ -39,6 +40,37 @@ struct MovieDetailsView: View {
                 Spacer()
             }
         }
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "chevron.left")
+                        .foregroundColor(.white)
+                }
+            }
+            .sharedBackgroundVisibility(.hidden)
+
+            
+            ToolbarItem(placement: .principal) {
+                Text("Details")
+                    .foregroundColor(.white)
+                    .font(.headline)
+            }
+            
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                    //vm.saveMovie()
+                } label: {
+                    Image(systemName: "bookmark")
+                        .foregroundColor(.white)
+                }
+            }
+            .sharedBackgroundVisibility(.hidden)
+        }
+        .toolbarBackground(Color.App.skyCaptain, for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
         .task {
             await vm.fetchMovieDetails()
             await vm.fetchMovieCredits()
@@ -56,7 +88,7 @@ struct MovieDetailsView: View {
             .frame(height: 210)
             .clipped()
         }
-
+        
     }
     
     @ViewBuilder
@@ -70,7 +102,7 @@ struct MovieDetailsView: View {
             .aspectRatio(2/3, contentMode: .fit)
             .clipShape(RoundedRectangle(cornerRadius: 16))
         }
-
+        
     }
     
     var title: some View {
@@ -124,6 +156,8 @@ struct MovieDetailsView: View {
             if let runtime = vm.movieDetails?.runtime {
                 Text("\(runtime) minutes")
                     .appFont(name: .poppinsMedium, size: 14,foregroundColor: .lilacFields)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
             }
             
         }
@@ -132,6 +166,8 @@ struct MovieDetailsView: View {
     var genre: some View {
         Text(vm.movieDetails?.genres.first?.name ?? "")
             .appFont(name: .poppinsMedium, size: 14,foregroundColor: .lilacFields)
+            .lineLimit(1)
+            .minimumScaleFactor(0.8)
     }
     
     var rect: some View {
@@ -159,7 +195,7 @@ struct MovieDetailsView: View {
         switch vm.selectedDetail {
         case .aboutMovie: overview
         case .reviews: reviews
-        case .cast: Text("Cast")
+        case .cast: cast
         }
     }
     
@@ -171,12 +207,12 @@ struct MovieDetailsView: View {
     
     var reviews: some View {
         ScrollView(.vertical, showsIndicators: false) {
-            LazyVGrid(columns: [GridItem(.flexible())]) {
+            LazyVGrid(columns: [GridItem(.flexible())],alignment: .leading) {
                 if vm.movieReviews.isEmpty {
                     Text("No reviews available")
                 } else {
                     ForEach(vm.movieReviews) { review in
-                        MovieReview(review: review)
+                        MovieReviewView(review: review)
                             .onAppear {
                                 if review == vm.movieReviews.last {
                                     Task {
@@ -192,7 +228,17 @@ struct MovieDetailsView: View {
             }
         }
     }
-
+    
+    var cast: some View {
+        ScrollView(.vertical, showsIndicators: false) {
+            LazyVGrid(columns: [GridItem(.flexible())]) {
+                ForEach(vm.movieCast) { cast in
+                    MovieCastView(cast: cast)
+                        .padding(.vertical,8)
+                }
+            }
+        }
+    }
     
 }
 

@@ -15,7 +15,13 @@ struct MovieAppApp: App {
         WindowGroup {
             NavigationStack {
                 HomeView(vm: container.makeHomeViewModel())
+                    .navigationDestination(for: Movie.self) { movie in
+                        let container = DIContainer()
+                        let detailsVM = container.makeMovieDetailsViewModel(movieID: movie.id)
+                        MovieDetailsView(vm: detailsVM)
+                    }
             }
+            
         }
     }
 }

@@ -12,7 +12,7 @@ import SwiftUI
 class MovieDetailsViewModel: ObservableObject {
     @Published var movieDetails: MovieDetails?
     @Published var movieReviews: [MovieReviews] = []
-    @Published var movieCast: [MovieCast]?
+    @Published var movieCast: [MovieCast] = []
     @Published private(set) var error: String?
     @Published var selectedDetail: DetailsInformation = .aboutMovie
     @Published private(set) var isLoading = false
