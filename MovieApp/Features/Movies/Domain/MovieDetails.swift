@@ -15,8 +15,3 @@ struct MovieDetails: Identifiable {
     let posterPath: String
     let genres: [MovieGenre]
 }
-
-struct MovieGenre: Identifiable {
-    let id: Int
-    let name: String
-}

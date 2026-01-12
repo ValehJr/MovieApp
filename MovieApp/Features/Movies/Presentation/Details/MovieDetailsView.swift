@@ -61,17 +61,21 @@ struct MovieDetailsView: View {
             
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
-                    //vm.saveMovie()
+                    Task {
+                        await vm.toggleFavorite()
+                    }
                 } label: {
-                    Image(systemName: "bookmark")
+                    Image(systemName: vm.isSaved ? "bookmark.fill" : "bookmark")
                         .foregroundColor(.white)
                 }
+                .disabled(vm.isLoading)
             }
             .sharedBackgroundVisibility(.hidden)
         }
         .toolbarBackground(Color.App.skyCaptain, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .task {
+            vm.refreshFavoriteStatus()
             await vm.fetchMovieDetails()
             await vm.fetchMovieCredits()
             await vm.fetchReviews()
