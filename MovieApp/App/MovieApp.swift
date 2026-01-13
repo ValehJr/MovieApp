@@ -8,20 +8,16 @@
 import SwiftUI
 
 @main
-struct MovieAppApp: App {
-    private let container = DIContainer()
-    
+struct MovieApp: App {
+    let container = DIContainer()
+    @State private var selectedTab: TabItems = .home
+
     var body: some Scene {
         WindowGroup {
-            NavigationStack {
-                HomeView(vm: container.makeHomeViewModel())
-                    .navigationDestination(for: Movie.self) { movie in
-                        let container = DIContainer()
-                        let detailsVM = container.makeMovieDetailsViewModel(movieID: movie.id)
-                        MovieDetailsView(vm: detailsVM)
-                    }
-            }
-            
+            RootView(
+                container: container,
+                selectedTab: $selectedTab
+            )
         }
     }
 }
