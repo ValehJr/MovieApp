@@ -72,36 +72,41 @@ class HomeViewModel: ObservableObject {
     }
     
     func loadMovies(nextPage: Bool = false) async {
-        var state = states[movieMode] ?? CategoryState()
+        guard let currentState = states[movieMode] else {
+            states[movieMode] = CategoryState()
+            await loadMovies(nextPage: false)
+            return
+        }
         
-        guard !state.isLoading, state.canLoadMore else { return }
+        guard !currentState.isLoading, currentState.canLoadMore else { return }
         
-        state.isLoading = true
-        state.error = nil
-        states[movieMode] = state
+        states[movieMode]?.isLoading = true
+        states[movieMode]?.error = nil
         
-        let page = nextPage ? state.page + 1 : 1
+        let page = nextPage ? currentState.page + 1 : 1
         
         do {
             let newMovies: [Movie] = try await fetch(for: movieMode, page: page)
             
             if newMovies.isEmpty {
-                state.canLoadMore = false
+                states[movieMode]?.canLoadMore = false
             } else {
                 if nextPage {
-                    state.movies.append(contentsOf: newMovies)
-                    state.page = page
+                    let existingIds = Set(currentState.movies.map { $0.id })
+                    let filteredNewMovies = newMovies.filter { !existingIds.contains($0.id) }
+                    
+                    states[movieMode]?.movies.append(contentsOf: filteredNewMovies)
+                    states[movieMode]?.page = page
                 } else {
-                    state.movies = newMovies
-                    state.page = 1
+                    states[movieMode]?.movies = newMovies
+                    states[movieMode]?.page = 1
                 }
             }
         } catch {
-            state.error = error.localizedDescription
+            states[movieMode]?.error = error.localizedDescription
         }
         
-        state.isLoading = false
-        states[movieMode] = state
+        states[movieMode]?.isLoading = false
     }
 }
 

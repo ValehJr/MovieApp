@@ -8,8 +8,6 @@
 import SwiftData
 import Foundation
 
-import SwiftData
-
 @Model
 final class MovieDetailsEntity {
     @Attribute(.unique) var id: Int
@@ -21,7 +19,7 @@ final class MovieDetailsEntity {
     var posterPath: String
     
     @Relationship(deleteRule: .cascade)
-    var genres: [MovieGenreEntity]
+    var genres: MovieGenreEntity?
 
     var posterURL: String?
     var backdropURL: String?
@@ -34,7 +32,7 @@ final class MovieDetailsEntity {
         releaseDate: String,
         backdropPath: String,
         posterPath: String,
-        genres: [MovieGenreEntity],
+        genres: MovieGenreEntity?,
         posterURL: String? = nil,
         backdropURL: String? = nil
     ) {

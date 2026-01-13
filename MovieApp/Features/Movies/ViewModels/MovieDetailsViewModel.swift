@@ -110,6 +110,9 @@ extension MovieDetailsViewModel {
                 try await persistence.deleteMovie(id: movieID)
                 isSaved = false
             } else {
+                let firstGenre: MovieGenreEntity? = movieDetails.genres.first.map {
+                    MovieGenreEntity(id: $0.id, name: $0.name)
+                }
                 let entity = MovieDetailsEntity(
                     id: movieDetails.id,
                     overview: movieDetails.overview,
@@ -118,9 +121,7 @@ extension MovieDetailsViewModel {
                     releaseDate: movieDetails.releaseDate,
                     backdropPath: movieDetails.backdropPath,
                     posterPath: movieDetails.posterPath,
-                    genres: movieDetails.genres.map {
-                        MovieGenreEntity(id: $0.id, name: $0.name)
-                    }
+                    genres: firstGenre
                 )
 
                 
