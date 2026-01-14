@@ -107,44 +107,57 @@ extension MovieDetailsViewModel {
         
         do {
             if isSaved {
-                try await persistence.deleteMovie(id: movieID)
+                try persistence.deleteMovie(id: movieID)
                 isSaved = false
-            } else {
-                let firstGenre: MovieGenreEntity? = movieDetails.genres.first.map {
-                    MovieGenreEntity(id: $0.id, name: $0.name)
-                }
-                let entity = MovieDetailsEntity(
-                    id: movieDetails.id,
-                    overview: movieDetails.overview,
-                    title: movieDetails.title,
-                    runtime: movieDetails.runtime,
-                    releaseDate: movieDetails.releaseDate,
-                    backdropPath: movieDetails.backdropPath,
-                    posterPath: movieDetails.posterPath,
-                    genres: firstGenre
-                )
-
-                
-                let savedMovie = try await persistence.saveMovie(entity)
-                
-                async let posterPath = ImageCacheService.shared.downloadAndCacheImage(
-                    from: "https://image.tmdb.org/t/p/w500\(savedMovie.posterPath)",
-                    movieID: savedMovie.id,
-                    type: "poster"
-                )
-                
-                async let backdropPath = ImageCacheService.shared.downloadAndCacheImage(
-                    from: "https://image.tmdb.org/t/p/original\(savedMovie.backdropPath)",
-                    movieID: savedMovie.id,
-                    type: "backdrop"
-                )
-                
-                savedMovie.posterURL = try await posterPath
-                savedMovie.backdropURL = try await backdropPath
-                try persistence.context.save()
-                
-                isSaved = true
+                return
             }
+
+            let genreDTO = movieDetails.genres.first {
+                $0.id > 0 && !$0.name.isEmpty
+            }
+
+            var genreEntity: MovieGenreEntity?
+
+            if let genreDTO {
+                genreEntity = MovieGenreEntity(
+                    id: genreDTO.id,
+                    name: genreDTO.name
+                )
+                persistence.context.insert(genreEntity!)
+            }
+
+            let movieEntity = MovieDetailsEntity(
+                id: movieDetails.id,
+                overview: movieDetails.overview,
+                title: movieDetails.title,
+                runtime: movieDetails.runtime,
+                releaseDate: movieDetails.releaseDate,
+                backdropPath: movieDetails.backdropPath,
+                posterPath: movieDetails.posterPath,
+                genres: genreEntity
+            )
+            
+            try persistence.saveMovie(movieEntity)
+
+            async let posterURL = ImageCacheService.shared.downloadAndCacheImage(
+                from: "https://image.tmdb.org/t/p/w500\(movieEntity.posterPath)",
+                movieID: movieEntity.id,
+                type: "poster"
+            )
+
+            async let backdropURL = ImageCacheService.shared.downloadAndCacheImage(
+                from: "https://image.tmdb.org/t/p/original\(movieEntity.backdropPath)",
+                movieID: movieEntity.id,
+                type: "backdrop"
+            )
+
+            movieEntity.posterURL = try await posterURL
+            movieEntity.backdropURL = try await backdropURL
+
+            try persistence.context.save()
+
+            isSaved = true
+
         } catch {
             print("Failed to toggle favorite:", error)
         }

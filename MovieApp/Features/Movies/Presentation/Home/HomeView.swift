@@ -50,7 +50,7 @@ struct HomeView: View {
     
     var title: some View {
         Text("What do you want to watch?")
-            .appFont(name: .poppinsSemiBold, size: 18,foregroundColor: .white)
+            .appFont(name: .poppinsSemiBold, size: 20,foregroundColor: .white)
     }
     
     var searchBar: some View {

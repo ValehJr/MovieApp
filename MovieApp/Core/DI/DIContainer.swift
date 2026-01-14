@@ -36,10 +36,14 @@ final class DIContainer {
     
     // MARK: - ViewModels
     func makeHomeViewModel() -> HomeViewModel {
-        HomeViewModel(repository: movieRepository)
+        HomeViewModel(repository: movieRepository,persistence: persistenceService)
     }
     
     func makeMovieDetailsViewModel(movieID: Int) -> MovieDetailsViewModel {
         MovieDetailsViewModel(movieID: movieID,repository: movieDetailsRepository,persistence: persistenceService)
+    }
+    
+    func makeWathchlistViewModel() -> WatchlistViewModel {
+        WatchlistViewModel(persistence: persistenceService)
     }
 }

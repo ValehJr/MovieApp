@@ -18,7 +18,7 @@ struct RootView: View {
                 content
                 if path.isEmpty {
                     CustomTabBar(selectedTab: $selectedTab)
-                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                        .transition(.move(edge: .bottom))
                 }
             }
             .animation(.easeInOut, value: path.count)
@@ -27,6 +27,7 @@ struct RootView: View {
                 MovieDetailsView(vm: detailsVM)
             }
         }
+        .background(.skyCaptain)
     }
     
     @ViewBuilder
@@ -35,7 +36,15 @@ struct RootView: View {
         case .home:
             HomeView(vm: container.makeHomeViewModel())
         case .wathclist:
-            WatchlistView()
+            WatchlistView(vm: container.makeWathchlistViewModel())
         }
     }
 }
+
+#Preview {
+    RootView(
+        container: DIContainer(),
+        selectedTab: .constant(.home)
+    )
+}
+

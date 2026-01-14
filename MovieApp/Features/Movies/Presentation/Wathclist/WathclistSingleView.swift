@@ -11,7 +11,7 @@ import SwiftData
 struct WathclistSingleView: View {
     let movie: MovieDetailsEntity
     var body: some View {
-        HStack(alignment:.top) {
+        HStack(alignment:.top,spacing: 16) {
             imageView
             VStack(alignment: .leading,spacing: 12) {
                 title
@@ -29,14 +29,14 @@ struct WathclistSingleView: View {
            let uiImage = UIImage(contentsOfFile: path) {
             Image(uiImage: uiImage)
                 .resizable()
-                .scaledToFill()
-                .frame(width: 95, height: 120)
+                .aspectRatio(2/3, contentMode: .fit)
+                .frame(width: 90, height: 140)
                 .clipped()
                 .cornerRadius(8)
         } else {
             RoundedRectangle(cornerRadius: 8)
                 .fill(Color.gray.opacity(0.3))
-                .frame(width: 95, height: 120)
+                .frame(width: 95, height: 140)
                 .overlay {
                     Image(systemName: "film")
                         .foregroundColor(.gray)
@@ -46,7 +46,7 @@ struct WathclistSingleView: View {
     
     var title: some View {
         Text(movie.title)
-            .appFont(name: .poppinsRegular, size: 16,foregroundColor: .blue)
+            .appFont(name: .poppinsRegular, size: 16,foregroundColor: .white)
     }
     
     @ViewBuilder
@@ -55,11 +55,11 @@ struct WathclistSingleView: View {
             Image(.genre)
                 .resizable()
                 .scaledToFit()
-                .foregroundStyle(.blue)
+                .foregroundStyle(.white)
                 .frame(width: 18,height: 18)
             
             Text(movie.genres?.name ?? "Genre unavailable")
-                .appFont(name: .poppinsRegular, size: 12,foregroundColor: .blue)
+                .appFont(name: .poppinsRegular, size: 12,foregroundColor: .white)
         }
         
     }
@@ -70,11 +70,11 @@ struct WathclistSingleView: View {
             Image(.calendar)
                 .resizable()
                 .scaledToFit()
-                .foregroundStyle(.blue)
+                .foregroundStyle(.white)
                 .frame(width: 18,height: 18)
             
             Text(movie.releaseDate.dateFormatter())
-                .appFont(name: .poppinsRegular, size: 12,foregroundColor: .blue)
+                .appFont(name: .poppinsRegular, size: 12,foregroundColor: .white)
         }
     }
     
@@ -84,12 +84,12 @@ struct WathclistSingleView: View {
             Image(.clock)
                 .resizable()
                 .scaledToFit()
-                .foregroundStyle(.blue)
+                .foregroundStyle(.white)
                 .frame(width: 18,height: 18)
             
             
             Text("\(movie.runtime) minutes")
-                .appFont(name: .poppinsRegular, size: 12,foregroundColor: .blue)
+                .appFont(name: .poppinsRegular, size: 12,foregroundColor: .white)
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
         }

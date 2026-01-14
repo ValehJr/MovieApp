@@ -8,6 +8,14 @@
 import Foundation
 import Combine
 
+struct CategoryState {
+    var movies: [Movie] = []
+    var page: Int = 1
+    var canLoadMore: Bool = true
+    var isLoading: Bool = false
+    var error: String?
+}
+
 @MainActor
 class HomeViewModel: ObservableObject {
     @Published var searchText: String = ""
@@ -29,9 +37,11 @@ class HomeViewModel: ObservableObject {
     private var canLoadMore = true
     
     private let repository: MovieRepositoryProtocol
+    private let persistence: PersistenceService
     
-    init(repository: MovieRepositoryProtocol) {
+    init(repository: MovieRepositoryProtocol, persistence: PersistenceService) {
         self.repository = repository
+        self.persistence = persistence
     }
     
     func loadTopRated(nextPage: Bool = false) async {
@@ -110,10 +120,13 @@ class HomeViewModel: ObservableObject {
     }
 }
 
-struct CategoryState {
-    var movies: [Movie] = []
-    var page: Int = 1
-    var canLoadMore: Bool = true
-    var isLoading: Bool = false
-    var error: String?
+extension HomeViewModel {
+    func deleteAll() async throws {
+        do {
+            try await persistence.deleteAllMovies()
+        } catch {
+            print("Failed to delete all movies: \(error)")
+            throw error
+        }
+    }
 }
