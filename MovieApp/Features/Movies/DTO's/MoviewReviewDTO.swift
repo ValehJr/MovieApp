@@ -9,16 +9,16 @@ import Foundation
 
 struct MovieReviewsDTO: Identifiable,Codable {
     let id: String
-    let author: String
-    let content: String
+    let author: String?
+    let content: String?
 }
 
 extension MovieReviewsDTO {
     func toDomain() -> MovieReviews {
         let review = MovieReviews(
             id: self.id,
-            author: self.author,
-            content: self.content
+            author: self.author ?? "N/A",
+            content: self.content ?? "N/A"
         )
         return review
     }

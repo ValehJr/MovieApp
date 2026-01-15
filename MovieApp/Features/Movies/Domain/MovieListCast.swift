@@ -7,5 +7,5 @@
 
 struct MovieListCast: Identifiable, Codable {
     let id: Int
-    let cast: [MovieCastDTO]
+    let cast: [MovieCastDTO]?
 }

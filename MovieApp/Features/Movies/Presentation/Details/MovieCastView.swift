@@ -43,12 +43,12 @@ struct MovieCastView: View {
     }
     
     var character: some View {
-        Text(cast.character)
+        Text(cast.character ?? "N/A")
             .appFont(name: .poppinsSemiBold, size: 18,foregroundColor: .white)
     }
     
     var name: some View {
-        Text(cast.name)
+        Text(cast.name ?? "N/A")
             .appFont(name: .poppinsMedium, size: 18,foregroundColor: .white)
     }
 }

@@ -9,6 +9,6 @@ import Foundation
 
 struct MovieReviews: Identifiable, Equatable {
     let id: String
-    let author: String
-    let content: String
+    let author: String?
+    let content: String?
 }

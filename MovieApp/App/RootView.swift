@@ -23,8 +23,12 @@ struct RootView: View {
             }
             .animation(.easeInOut, value: path.count)
             .navigationDestination(for: Movie.self) { movie in
-                let detailsVM = container.makeMovieDetailsViewModel(movieID: movie.id)
-                MovieDetailsView(vm: detailsVM)
+                MovieDetailsView(
+                    vm: container.makeMovieDetailsViewModel(movieID: movie.id)
+                )
+            }
+            .navigationDestination(for: MovieDetailsEntity.self) { savedMovie in
+                WatchlistDetailsView(vm: container.makeWathchlistDetailsViewModel(movieID: savedMovie.id))
             }
         }
         .background(.skyCaptain)

@@ -38,7 +38,9 @@ struct WatchlistView: View {
         ScrollView(.vertical, showsIndicators: false) {
             LazyVGrid(columns: [GridItem(.flexible())],spacing: 24) {
                 ForEach(vm.savedMovies) { movie in
-                    WathclistSingleView(movie: movie)
+                    NavigationLink(value: movie) {
+                        WathclistSingleView(movie: movie)
+                    }
                 }
             }
         }

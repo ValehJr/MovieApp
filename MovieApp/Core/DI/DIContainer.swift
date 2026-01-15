@@ -23,27 +23,49 @@ final class DIContainer {
     
     @MainActor
     lazy var persistenceService: PersistenceService = {
-        PersistenceService(container: modelContainer)
+        PersistenceService(
+            container: modelContainer
+        )
     }()
     
     lazy var movieRepository: MovieRepositoryProtocol = {
-        TMDBMovieRepository(client: networkClient)
+        TMDBMovieRepository(
+            client: networkClient
+        )
     }()
     
     lazy var movieDetailsRepository: MovieDetailsProtocol = {
-        TMDBMovieDetails(client: networkClient)
+        TMDBMovieDetails(
+            client: networkClient
+        )
     }()
     
     // MARK: - ViewModels
     func makeHomeViewModel() -> HomeViewModel {
-        HomeViewModel(repository: movieRepository,persistence: persistenceService)
+        HomeViewModel(
+            repository: movieRepository,
+            persistence: persistenceService
+        )
     }
     
     func makeMovieDetailsViewModel(movieID: Int) -> MovieDetailsViewModel {
-        MovieDetailsViewModel(movieID: movieID,repository: movieDetailsRepository,persistence: persistenceService)
+        MovieDetailsViewModel(
+            movieID: movieID,
+            repository: movieDetailsRepository,
+            persistence: persistenceService
+        )
     }
     
     func makeWathchlistViewModel() -> WatchlistViewModel {
-        WatchlistViewModel(persistence: persistenceService)
+        WatchlistViewModel(
+            persistence: persistenceService
+        )
+    }
+    
+    func makeWathchlistDetailsViewModel(movieID: Int) -> WatchlistDetailsViewModel {
+        WatchlistDetailsViewModel(
+            persistence: persistenceService,
+            id: movieID
+        )
     }
 }

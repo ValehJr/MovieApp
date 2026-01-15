@@ -7,8 +7,8 @@
 
 struct MovieCast: Identifiable {
     let id: Int
-    let name: String
-    let character: String
+    let name: String?
+    let character: String?
     let profilePath: String?
     
     enum CodingKeys: String, CodingKey {

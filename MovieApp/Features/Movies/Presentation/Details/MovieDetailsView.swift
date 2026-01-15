@@ -8,27 +8,26 @@
 import SwiftUI
 
 struct MovieDetailsView: View {
-    @StateObject private var vm: MovieDetailsViewModel
+    @ObservedObject var vm: MovieDetailsViewModel
     @Environment(\.dismiss) private var dismiss
-    
-    init(vm: MovieDetailsViewModel) {
-        _vm = StateObject(wrappedValue: vm)
-    }
     
     var body: some View {
         ZStack {
             Color.App.skyCaptain.ignoresSafeArea()
             VStack(alignment:.center) {
-                ZStack(alignment: .bottomLeading) {
-                    backdrop
-                    heroContent
-                        .padding(.leading,28)
-                        .padding(.trailing)
-                }
+                MovieHeroHeaderView(
+                    backdropPath: vm.movieDetails?.backdropPath,
+                    posterPath: vm.movieDetails?.posterPath,
+                    title: vm.movieDetails?.title
+                )
                 
-                details
-                    .padding(.horizontal,28)
-                    .padding(.top, 90)
+                MovieMetaInfoView(
+                    releaseDate: vm.movieDetails?.releaseDate,
+                    runtime: vm.movieDetails?.runtime,
+                    genre: vm.movieDetails?.genres?.first?.name
+                )
+                .padding(.horizontal,28)
+                .padding(.top, 90)
                 
                 detailsScrollView
                     .padding(.horizontal,28)
@@ -72,112 +71,13 @@ struct MovieDetailsView: View {
             }
             .sharedBackgroundVisibility(.hidden)
         }
-        .toolbarBackground(Color.App.skyCaptain, for: .navigationBar)
-        .toolbarBackground(.visible, for: .navigationBar)
+        .toolbarBackground(.hidden, for: .navigationBar)
         .task {
             vm.refreshFavoriteStatus()
             await vm.fetchMovieDetails()
             await vm.fetchMovieCredits()
             await vm.fetchReviews()
         }
-    }
-    
-    @ViewBuilder
-    var backdrop: some View {
-        if let path = vm.movieDetails?.backdropPath {
-            RemoteImageView(
-                path: path,
-                contentMode: .fill
-            )
-            .frame(height: 210)
-            .clipped()
-        }
-        
-    }
-    
-    @ViewBuilder
-    var poster: some View {
-        if let path = vm.movieDetails?.posterPath {
-            RemoteImageView(
-                path: path,
-                contentMode: .fill
-            )
-            .frame(width: 95,height: 120)
-            .aspectRatio(2/3, contentMode: .fit)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
-        }
-        
-    }
-    
-    var title: some View {
-        Text(vm.movieDetails?.title ?? "")
-            .appFont(name: .poppinsSemiBold, size: 24,foregroundColor: .white)
-            .multilineTextAlignment(.leading)
-            .frame(maxWidth: .infinity,alignment: .leading)
-    }
-    
-    var heroContent: some View {
-        HStack(spacing: 12) {
-            poster
-            title
-        }
-        .padding(.bottom, -60)
-    }
-    
-    var details: some View {
-        HStack(spacing: 12) {
-            releaseDate
-            rect
-            runtime
-            rect
-            genre
-        }
-    }
-    
-    @ViewBuilder
-    var releaseDate: some View {
-        HStack(spacing: 4) {
-            Image(.calendar)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 18,height: 18)
-            
-            if let releaseDate = vm.movieDetails?.releaseDate {
-                Text(releaseDate.dateFormatter())
-                    .appFont(name: .poppinsMedium, size: 14,foregroundColor: .lilacFields)
-            }
-        }
-    }
-    
-    @ViewBuilder
-    var runtime: some View {
-        HStack(spacing: 4) {
-            Image(.clock)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 18,height: 18)
-            
-            if let runtime = vm.movieDetails?.runtime {
-                Text("\(runtime) minutes")
-                    .appFont(name: .poppinsMedium, size: 14,foregroundColor: .lilacFields)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.8)
-            }
-            
-        }
-    }
-    
-    var genre: some View {
-        Text(vm.movieDetails?.genres.first?.name ?? "")
-            .appFont(name: .poppinsMedium, size: 14,foregroundColor: .lilacFields)
-            .lineLimit(1)
-            .minimumScaleFactor(0.8)
-    }
-    
-    var rect: some View {
-        Rectangle()
-            .foregroundStyle(.lilacFields)
-            .frame(width: 1,height: 16)
     }
     
     var detailsScrollView: some View {
@@ -248,5 +148,5 @@ struct MovieDetailsView: View {
 
 #Preview {
     let container = DIContainer()
-    MovieDetailsView(vm: container.makeMovieDetailsViewModel(movieID: 83533))
+    MovieDetailsView(vm: container.makeMovieDetailsViewModel(movieID: 1))
 }

@@ -10,8 +10,8 @@ import Foundation
 
 struct MovieDTO: Codable {
     let id: Int
-    let title: String
-    let overview: String
+    let title: String?
+    let overview: String?
     let posterPath: String?
     let backdropPath: String?
     let releaseDate: String?
@@ -28,11 +28,11 @@ extension MovieDTO {
     func toDomain() -> Movie {
         let movie =  Movie(
             id: self.id,
-            title: self.title,
-            releaseDate: self.releaseDate ?? "",
-            backdropPath: self.backdropPath ?? "",
-            overview: self.overview,
-            posterPath: self.posterPath ?? ""
+            title: self.title ?? "N/A",
+            releaseDate: self.releaseDate ?? "N/A",
+            backdropPath: self.backdropPath ?? "N/A",
+            overview: self.overview ?? "N/A",
+            posterPath: self.posterPath ?? "N/A"
         )
         return movie
     }

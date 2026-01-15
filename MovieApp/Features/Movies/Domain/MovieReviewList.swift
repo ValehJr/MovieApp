@@ -10,5 +10,5 @@ import Foundation
 struct MovieReviewList: Codable, Identifiable {
     let id: Int
     let page: Int
-    let results: [MovieReviewsDTO]
+    let results: [MovieReviewsDTO]?
 }

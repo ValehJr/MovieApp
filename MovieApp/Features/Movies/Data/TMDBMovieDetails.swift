@@ -25,13 +25,13 @@ final class TMDBMovieDetails: MovieDetailsProtocol {
         let response: MovieListCast = try await client.request(
             .movieCredits(id: id)
         )
-        return response.cast.map { $0.toDomain() }
+        return (response.cast ?? []).map { $0.toDomain() }    
     }
     
     func fetchMovieReviews(id: Int,page: Int) async throws -> [MovieReviews] {
         let response: MovieReviewList = try await client.request(
             .movieReviews(id: id,page: page)
         )
-        return response.results.map { $0.toDomain() }
+        return (response.results ?? []).map { $0.toDomain() }
     }
 }

@@ -18,28 +18,28 @@ final class TMDBMovieRepository: MovieRepositoryProtocol {
         let response: MovieListResponse = try await client.request(
             .nowPlayingMovies(page: page)
         )
-        return response.results.map { $0.toDomain() }
+        return (response.results ?? []).map { $0.toDomain() }
     }
     
     func fetchTopRatedMovies(page: Int) async throws -> [Movie] {
         let response: MovieListResponse = try await client.request(
             .topRatedMovies(page: page)
         )
-        return response.results.map { $0.toDomain() }
+        return (response.results ?? []).map { $0.toDomain() }
     }
     
     func fetchUpcomingMovies(page: Int) async throws -> [Movie] {
         let response: MovieListResponse = try await client.request(
             .upcomingMovies(page: page)
         )
-        return response.results.map { $0.toDomain() }
+        return (response.results ?? []).map { $0.toDomain() }
     }
     
     func fetchPopularMovies(page: Int) async throws -> [Movie] {
         let response: MovieListResponse = try await client.request(
             .popularMovies(page: page)
         )
-        return response.results.map { $0.toDomain() }
+        return (response.results ?? []).map { $0.toDomain() }
     }
 
 //    func searchMovies(query: String, page: Int) async throws -> [Movie] {

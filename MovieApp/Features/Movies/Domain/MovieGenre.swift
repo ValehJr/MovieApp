@@ -7,5 +7,5 @@
 
 struct MovieGenre: Identifiable {
     let id: Int
-    let name: String
+    let name: String?
 }

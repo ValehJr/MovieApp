@@ -7,8 +7,8 @@
 
 struct MovieCastDTO: Identifiable, Codable {
     let id: Int
-    let name: String
-    let character: String
+    let name: String?
+    let character: String?
     let profilePath: String?
     
     enum CodingKeys: String, CodingKey {
@@ -21,9 +21,10 @@ extension MovieCastDTO {
     func toDomain() -> MovieCast {
         let cast = MovieCast(
             id: id,
-            name: name,
-            character: character,
-            profilePath: profilePath)
+            name: name ?? "N/A",
+            character: character ?? "N/A",
+            profilePath: profilePath ?? "N/A"
+        )
         return cast
     }
 }

@@ -12,7 +12,7 @@ struct MovieView: View {
 
     var body: some View {
         RemoteImageView(
-            path: movie.posterPath,
+            path: movie.posterPath ?? "",
             contentMode: .fill
         )
         .aspectRatio(2/3, contentMode: .fit)

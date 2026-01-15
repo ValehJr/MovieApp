@@ -8,5 +8,5 @@
 import Foundation
 
 struct MovieListResponse: Codable {
-    let results: [MovieDTO]
+    let results: [MovieDTO]?
 }

@@ -112,28 +112,32 @@ extension MovieDetailsViewModel {
                 return
             }
 
-            let genreDTO = movieDetails.genres.first {
-                $0.id > 0 && !$0.name.isEmpty
+            let genreDTO = movieDetails.genres?.first { genre in
+                genre.id > 0 && !(genre.name ?? "").isEmpty
             }
 
             var genreEntity: MovieGenreEntity?
 
-            if let genreDTO {
+            // 2. Map to Entity
+            if let genreDTO = genreDTO {
                 genreEntity = MovieGenreEntity(
                     id: genreDTO.id,
-                    name: genreDTO.name
+                    name: genreDTO.name ?? "N/A"
                 )
-                persistence.context.insert(genreEntity!)
+                
+                if let entity = genreEntity {
+                    persistence.context.insert(entity)
+                }
             }
 
             let movieEntity = MovieDetailsEntity(
                 id: movieDetails.id,
-                overview: movieDetails.overview,
-                title: movieDetails.title,
-                runtime: movieDetails.runtime,
-                releaseDate: movieDetails.releaseDate,
-                backdropPath: movieDetails.backdropPath,
-                posterPath: movieDetails.posterPath,
+                overview: movieDetails.overview ?? "N/A",
+                title: movieDetails.title ?? "N/A",
+                runtime: movieDetails.runtime ?? 0,
+                releaseDate: movieDetails.releaseDate ?? "N/A",
+                backdropPath: movieDetails.backdropPath ?? "N/A",
+                posterPath: movieDetails.posterPath ?? "N/A",
                 genres: genreEntity
             )
             

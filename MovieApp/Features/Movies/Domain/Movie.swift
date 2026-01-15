@@ -9,9 +9,9 @@ import Foundation
 
 struct Movie: Identifiable, Equatable, Hashable {
     let id: Int
-    let title: String
-    let releaseDate: String
-    let backdropPath: String
-    let overview: String
-    let posterPath: String
+    let title: String?
+    let releaseDate: String?
+    let backdropPath: String?
+    let overview: String?
+    let posterPath: String?
 }

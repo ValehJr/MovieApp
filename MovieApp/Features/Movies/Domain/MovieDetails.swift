@@ -7,11 +7,11 @@
 
 struct MovieDetails: Identifiable {
     let id: Int
-    let overview: String
-    let title: String
-    let runtime: Int
-    let releaseDate: String
-    let backdropPath: String
-    let posterPath: String
-    let genres: [MovieGenre]
+    let overview: String?
+    let title: String?
+    let runtime: Int?
+    let releaseDate: String?
+    let backdropPath: String?
+    let posterPath: String?
+    let genres: [MovieGenre]?
 }

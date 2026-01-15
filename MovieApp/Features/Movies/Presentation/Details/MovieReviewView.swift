@@ -17,12 +17,12 @@ struct MovieReviewView: View {
     }
     
     var author: some View {
-        Text(review.author)
+        Text(review.author ?? "N/A")
             .appFont(name: .poppinsMedium, size: 14,foregroundColor: .white)
     }
     
     var content: some View {
-        Text(review.content)
+        Text(review.content ?? "N/A")
             .appFont(name: .poppinsMedium, size: 14,foregroundColor: .white)
     }
 }
