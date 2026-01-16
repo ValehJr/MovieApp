@@ -8,8 +8,13 @@
 import SwiftUI
 
 struct MovieDetailsView: View {
-    @ObservedObject var vm: MovieDetailsViewModel
+    @StateObject var vm: MovieDetailsViewModel
     @Environment(\.dismiss) private var dismiss
+    
+    init(vm: MovieDetailsViewModel) {
+        _vm = StateObject(wrappedValue: vm)
+    }
+    
     
     var body: some View {
         ZStack {

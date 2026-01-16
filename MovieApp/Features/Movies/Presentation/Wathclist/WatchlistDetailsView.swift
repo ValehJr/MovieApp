@@ -10,8 +10,12 @@ import SwiftUI
 
 struct WatchlistDetailsView: View {
     
-    @ObservedObject var vm: WatchlistDetailsViewModel
+    @StateObject var vm: WatchlistDetailsViewModel
     @Environment(\.dismiss) private var dismiss
+    
+    init(vm: WatchlistDetailsViewModel) {
+        _vm = StateObject(wrappedValue: vm)
+    }
     
     var body: some View {
         ZStack {

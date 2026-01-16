@@ -135,11 +135,19 @@ struct HomeView: View {
                 ForEach(vm.searchResults) { movie in
                     NavigationLink(value: movie.id) {
                         MovieView(moviePosterPath: movie.posterPath)
+                            .onAppear {
+                                if movie == vm.searchResults.last {
+                                    Task {
+                                        vm.movieSearch(vm.searchText, isNextPage: true)
+                                    }
+                                }
+                            }
                     }
                 }
             }
             .padding()
         }
+        .id(vm.searchText)
         .background(Color.skyCaptain)
     }
 }

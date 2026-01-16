@@ -41,6 +41,9 @@ class HomeViewModel: ObservableObject {
     private let persistence: PersistenceService
     private var searchTask: Task<Void, Never>?
     
+    private var searchPage = 1
+    var canLoadMoreSearch = true
+    
     init(repository: MovieRepositoryProtocol, persistence: PersistenceService) {
         self.repository = repository
         self.persistence = persistence
@@ -121,8 +124,14 @@ class HomeViewModel: ObservableObject {
         states[movieMode]?.isLoading = false
     }
     
-    func movieSearch(_ query: String) {
-        searchTask?.cancel()
+    func movieSearch(_ query: String, isNextPage: Bool = false) {
+        if !isNextPage {
+            searchTask?.cancel()
+            searchPage = 1
+            canLoadMoreSearch = true
+        } else {
+            guard canLoadMoreSearch && !query.isEmpty else { return }
+        }
         
         guard !query.isEmpty else {
             searchResults = []
@@ -130,15 +139,28 @@ class HomeViewModel: ObservableObject {
         }
         
         searchTask = Task {
-            try? await Task.sleep(nanoseconds: 300_000_000)
+            if !isNextPage {
+                try? await Task.sleep(nanoseconds: 300_000_000)
+            }
+            
             guard !Task.isCancelled else { return }
+            
+            let targetPage = isNextPage ? searchPage + 1 : 1
             
             do {
                 let movies = try await repository.searchMovies(
                     query: query.lowercased(),
-                    page: 1
+                    page: targetPage
                 )
-                searchResults = movies
+                
+                if isNextPage {
+                    searchResults.append(contentsOf: movies)
+                } else {
+                    searchResults = movies
+                }
+                searchPage = targetPage
+                canLoadMoreSearch = !movies.isEmpty
+                
             } catch {
                 self.error = error.localizedDescription
             }

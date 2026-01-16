@@ -65,31 +65,23 @@ class WatchlistDetailsViewModel: ObservableObject {
     }
     
     private func restoreMovie(from snapshot: MovieSnapshot) throws {
-        // 1. Prepare an empty array for the genre entities
         var genreEntities: [MovieGenreEntity] = []
 
-        // 2. Loop through the genres saved in the snapshot
         if let snapshotGenres = snapshot.genres {
             for genreSnap in snapshotGenres {
-                // CHECK: Does this genre already exist in the DB?
-                // (Assumes you added the fetchGenre helper to PersistenceService as discussed)
                 if let existingGenre = persistence.fetchGenre(id: genreSnap.id) {
-                    // Yes: Reuse it
                     genreEntities.append(existingGenre)
                 } else {
-                    // No: Create a new one
                     let newGenre = MovieGenreEntity(
                         id: genreSnap.id,
                         name: genreSnap.name ?? "N/A"
                     )
-                    // Insert it into context so it gets saved
                     persistence.context.insert(newGenre)
                     genreEntities.append(newGenre)
                 }
             }
         }
 
-        // 3. Create the Movie Entity using the ARRAY of genres
         let movieEntity = MovieDetailsEntity(
             id: snapshot.id,
             overview: snapshot.overview ?? "N/A",
@@ -98,10 +90,9 @@ class WatchlistDetailsViewModel: ObservableObject {
             releaseDate: snapshot.releaseDate ?? "N/A",
             backdropPath: snapshot.backdropPath ?? "N/A",
             posterPath: snapshot.posterPath ?? "N/A",
-            genres: genreEntities // Pass the list here
+            genres: genreEntities
         )
         
-        // 4. Save the movie
         try persistence.saveMovie(movieEntity)
     }
 }
