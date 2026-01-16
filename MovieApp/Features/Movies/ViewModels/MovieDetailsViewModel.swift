@@ -103,67 +103,53 @@ class MovieDetailsViewModel: ObservableObject {
 
 extension MovieDetailsViewModel {
     func toggleFavorite() async {
-        guard let movieDetails else { return }
+        guard let movieDetails = self.movieDetails else { return }
         
         do {
             if isSaved {
                 try persistence.deleteMovie(id: movieID)
                 isSaved = false
-                return
-            }
+            } else {
+                let genreDTO = movieDetails.genres?.first { $0.id > 0 && !($0.name ?? "").isEmpty }
+                var genreEntity: MovieGenreEntity?
+                if let dto = genreDTO {
+                    genreEntity = MovieGenreEntity(id: dto.id, name: dto.name ?? "N/A")
+                }
 
-            let genreDTO = movieDetails.genres?.first { genre in
-                genre.id > 0 && !(genre.name ?? "").isEmpty
-            }
-
-            var genreEntity: MovieGenreEntity?
-
-            // 2. Map to Entity
-            if let genreDTO = genreDTO {
-                genreEntity = MovieGenreEntity(
-                    id: genreDTO.id,
-                    name: genreDTO.name ?? "N/A"
+                let movieEntity = MovieDetailsEntity(
+                    id: movieDetails.id,
+                    overview: movieDetails.overview ?? "N/A",
+                    title: movieDetails.title ?? "N/A",
+                    runtime: movieDetails.runtime ?? 0,
+                    releaseDate: movieDetails.releaseDate ?? "N/A",
+                    backdropPath: movieDetails.backdropPath ?? "N/A",
+                    posterPath: movieDetails.posterPath ?? "N/A",
+                    genres: genreEntity
                 )
-                
-                if let entity = genreEntity {
-                    persistence.context.insert(entity)
+
+                try persistence.saveMovie(movieEntity)
+                self.isSaved = true
+
+                let posterPath = movieDetails.posterPath ?? ""
+                let backdropPath = movieDetails.backdropPath ?? ""
+                let mid = movieDetails.id
+
+                Task.detached(priority: .background) {
+                    _ = try? await ImageCacheService.shared.downloadAndCacheImage(
+                        from: "https://image.tmdb.org/t/p/w500\(posterPath)",
+                        movieID: mid,
+                        type: "poster"
+                    )
+                    
+                    _ = try? await ImageCacheService.shared.downloadAndCacheImage(
+                        from: "https://image.tmdb.org/t/p/original\(backdropPath)",
+                        movieID: mid,
+                        type: "backdrop"
+                    )
                 }
             }
-
-            let movieEntity = MovieDetailsEntity(
-                id: movieDetails.id,
-                overview: movieDetails.overview ?? "N/A",
-                title: movieDetails.title ?? "N/A",
-                runtime: movieDetails.runtime ?? 0,
-                releaseDate: movieDetails.releaseDate ?? "N/A",
-                backdropPath: movieDetails.backdropPath ?? "N/A",
-                posterPath: movieDetails.posterPath ?? "N/A",
-                genres: genreEntity
-            )
-            
-            try persistence.saveMovie(movieEntity)
-
-            async let posterURL = ImageCacheService.shared.downloadAndCacheImage(
-                from: "https://image.tmdb.org/t/p/w500\(movieEntity.posterPath)",
-                movieID: movieEntity.id,
-                type: "poster"
-            )
-
-            async let backdropURL = ImageCacheService.shared.downloadAndCacheImage(
-                from: "https://image.tmdb.org/t/p/original\(movieEntity.backdropPath)",
-                movieID: movieEntity.id,
-                type: "backdrop"
-            )
-
-            movieEntity.posterURL = try await posterURL
-            movieEntity.backdropURL = try await backdropURL
-
-            try persistence.context.save()
-
-            isSaved = true
-
         } catch {
-            print("Failed to toggle favorite:", error)
+            print("Toggle favorite failed: \(error)")
         }
     }
     

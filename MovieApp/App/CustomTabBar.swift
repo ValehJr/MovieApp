@@ -31,6 +31,7 @@ struct CustomTabBar: View {
             }
         }
         .padding(.horizontal, 12)
+        .padding(.top,16)
         .background(.skyCaptain)
     }
 }

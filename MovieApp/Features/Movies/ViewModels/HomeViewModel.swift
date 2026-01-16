@@ -121,9 +121,9 @@ class HomeViewModel: ObservableObject {
 }
 
 extension HomeViewModel {
-    func deleteAll() async throws {
+    func deleteAll() throws {
         do {
-            try await persistence.deleteAllMovies()
+            try persistence.deleteAllMovies()
         } catch {
             print("Failed to delete all movies: \(error)")
             throw error

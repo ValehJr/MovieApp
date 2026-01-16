@@ -36,7 +36,7 @@ struct HomeView: View {
                     .padding(.top,16)
                 
                 seletedModeMovies
-                    .padding(24)
+                    .padding(.horizontal,20)
                 
             }
             .frame(maxWidth: .infinity,alignment: .leading)

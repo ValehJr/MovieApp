@@ -20,9 +20,20 @@ final class MovieDetailsEntity {
     
     @Relationship(deleteRule: .cascade)
     var genres: MovieGenreEntity?
-
-    var posterURL: String?
-    var backdropURL: String?
+    
+    var localPosterURL: URL? {
+        let cacheDir = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("MovieImages")
+        let fileURL = cacheDir.appendingPathComponent("\(id)_poster.jpg")
+        return FileManager.default.fileExists(atPath: fileURL.path) ? fileURL : nil
+    }
+    
+    var localBackdropURL: URL? {
+        let cacheDir = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("MovieImages")
+        let fileURL = cacheDir.appendingPathComponent("\(id)_backdrop.jpg")
+        return FileManager.default.fileExists(atPath: fileURL.path) ? fileURL : nil
+    }
     
     init(
         id: Int,
@@ -32,9 +43,7 @@ final class MovieDetailsEntity {
         releaseDate: String,
         backdropPath: String,
         posterPath: String,
-        genres: MovieGenreEntity?,
-        posterURL: String? = nil,
-        backdropURL: String? = nil
+        genres: MovieGenreEntity?
     ) {
         self.id = id
         self.overview = overview
@@ -44,7 +53,5 @@ final class MovieDetailsEntity {
         self.backdropPath = backdropPath
         self.posterPath = posterPath
         self.genres = genres
-        self.posterURL = posterURL
-        self.backdropURL = backdropURL
     }
 }

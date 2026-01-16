@@ -23,6 +23,7 @@ struct WatchlistView: View {
                 savedMovies
             }
             .padding(.horizontal,28)
+            .frame(maxWidth: .infinity,alignment: .leading)
         }
         .task {
             await vm.fetchSavedMovies()

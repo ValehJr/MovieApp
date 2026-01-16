@@ -25,8 +25,9 @@ struct WathclistSingleView: View {
     
     @ViewBuilder
     var imageView: some View {
-        if let path = movie.posterURL,
-           let uiImage = UIImage(contentsOfFile: path) {
+        if let posterURL = movie.localPosterURL,
+           let imageData = try? Data(contentsOf: posterURL),
+            let uiImage = UIImage(data: imageData) {
             Image(uiImage: uiImage)
                 .resizable()
                 .aspectRatio(2/3, contentMode: .fit)
@@ -47,6 +48,7 @@ struct WathclistSingleView: View {
     var title: some View {
         Text(movie.title)
             .appFont(name: .poppinsRegular, size: 16,foregroundColor: .white)
+            .multilineTextAlignment(.leading)
     }
     
     @ViewBuilder
@@ -94,30 +96,4 @@ struct WathclistSingleView: View {
                 .minimumScaleFactor(0.8)
         }
     }
-    
-}
-
-#Preview {
-    let config = ModelConfiguration(isStoredInMemoryOnly: true)
-    let container = try! ModelContainer(for: MovieDetailsEntity.self, configurations: config)
-    
-    let fantasy = MovieGenreEntity(id: 14, name: "Fantasy")
-    let action = MovieGenreEntity(id: 28, name: "Action")
-    let adventure = MovieGenreEntity(id: 12, name: "Adventure")
-    
-    let avatar = MovieDetailsEntity(
-        id: 83533,
-        overview: "In the wake of the devastating war against the RDA...",
-        title: "Avatar: Fire and Ash",
-        runtime: 198,
-        releaseDate: "2025-12-17",
-        backdropPath: "/vm4H1DivjQoNIm0Vs6i3CTzFxQ0.jpg",
-        posterPath: "/cf7hE1ifY4UNbS25tGnaTyyDrI2.jpg",
-        genres: .init(id: 1, name: "Action"),
-        posterURL: "/var/mobile/Containers/Data/Application/FFDFCFE3-974B-4B33-9925-F9751510DE27/Library/Caches/MovieImages/83533_poster.jpg",
-        backdropURL: "/var/mobile/Containers/Data/Application/FFDFCFE3-974B-4B33-9925-F9751510DE27/Library/Caches/MovieImages/83533_backdrop.jpg"
-    )
-    
-    WathclistSingleView(movie: avatar)
-        .modelContainer(container)
 }

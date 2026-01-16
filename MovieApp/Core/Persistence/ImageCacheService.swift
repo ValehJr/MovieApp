@@ -10,7 +10,7 @@ import UIKit
 
 actor ImageCacheService {
     static let shared = ImageCacheService()
-    let cacheDir: URL
+    private let cacheDir: URL
 
     private init() {
         cacheDir = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
@@ -18,11 +18,13 @@ actor ImageCacheService {
         try? FileManager.default.createDirectory(at: cacheDir, withIntermediateDirectories: true)
     }
 
-    func downloadAndCacheImage(from urlString: String, movieID: Int, type: String) async throws -> String {
+    func downloadAndCacheImage(from urlString: String, movieID: Int, type: String) async throws -> URL {
         guard let url = URL(string: urlString) else { throw URLError(.badURL) }
+        
         let (data, _) = try await URLSession.shared.data(from: url)
         let fileURL = cacheDir.appendingPathComponent("\(movieID)_\(type).jpg")
+        
         try data.write(to: fileURL, options: .atomic)
-        return fileURL.path
+        return fileURL
     }
 }

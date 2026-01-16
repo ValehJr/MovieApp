@@ -14,8 +14,9 @@ struct RootView: View {
     
     var body: some View {
         NavigationStack(path: $path) {
-            VStack(spacing: 0) {
+            ZStack(alignment: .bottom) {
                 content
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                 if path.isEmpty {
                     CustomTabBar(selectedTab: $selectedTab)
                         .transition(.move(edge: .bottom))
@@ -28,7 +29,9 @@ struct RootView: View {
                 )
             }
             .navigationDestination(for: MovieDetailsEntity.self) { savedMovie in
-                WatchlistDetailsView(vm: container.makeWathchlistDetailsViewModel(movieID: savedMovie.id))
+                WatchlistDetailsView(
+                    vm: container.makeWathchlistDetailsViewModel(movieID: savedMovie.id)
+                )
             }
         }
         .background(.skyCaptain)
