@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct MovieView: View {
-    let movie: Movie
+    let moviePosterPath: String?
 
     var body: some View {
         RemoteImageView(
-            path: movie.posterPath ?? "",
+            path: moviePosterPath ?? "",
             contentMode: .fill
         )
         .aspectRatio(2/3, contentMode: .fit)
@@ -22,5 +22,5 @@ struct MovieView: View {
 
 
 #Preview {
-    MovieView(movie: .init(id: 1, title: "Test", releaseDate: "test", backdropPath: "test", overview: "test", posterPath: "test"))
+    MovieView(moviePosterPath: "")
 }

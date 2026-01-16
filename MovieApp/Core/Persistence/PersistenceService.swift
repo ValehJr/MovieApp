@@ -45,6 +45,13 @@ final class PersistenceService {
         return try? context.fetch(descriptor).first
     }
     
+    func fetchGenre(id: Int) -> MovieGenreEntity? {
+        let descriptor = FetchDescriptor<MovieGenreEntity>(
+            predicate: #Predicate { $0.id == id }
+        )
+        return try? context.fetch(descriptor).first
+    }
+    
     func fetchAllMovies() async throws -> [MovieDetailsEntity] {
         (try? context.fetch(FetchDescriptor<MovieDetailsEntity>())) ?? []
     }

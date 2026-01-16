@@ -28,6 +28,7 @@ class HomeViewModel: ObservableObject {
             Task { await loadMovies() }
         }
     }
+    @Published var searchResults: [MovieSearch] = []
     
     var currentMovies: [Movie] {
         states[movieMode]?.movies ?? []
@@ -38,6 +39,7 @@ class HomeViewModel: ObservableObject {
     
     private let repository: MovieRepositoryProtocol
     private let persistence: PersistenceService
+    private var searchTask: Task<Void, Never>?
     
     init(repository: MovieRepositoryProtocol, persistence: PersistenceService) {
         self.repository = repository
@@ -117,6 +119,30 @@ class HomeViewModel: ObservableObject {
         }
         
         states[movieMode]?.isLoading = false
+    }
+    
+    func movieSearch(_ query: String) {
+        searchTask?.cancel()
+        
+        guard !query.isEmpty else {
+            searchResults = []
+            return
+        }
+        
+        searchTask = Task {
+            try? await Task.sleep(nanoseconds: 300_000_000)
+            guard !Task.isCancelled else { return }
+            
+            do {
+                let movies = try await repository.searchMovies(
+                    query: query.lowercased(),
+                    page: 1
+                )
+                searchResults = movies
+            } catch {
+                self.error = error.localizedDescription
+            }
+        }
     }
 }
 

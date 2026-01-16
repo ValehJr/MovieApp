@@ -22,10 +22,10 @@ struct RootView: View {
                         .transition(.move(edge: .bottom))
                 }
             }
-            .animation(.easeInOut, value: path.count)
-            .navigationDestination(for: Movie.self) { movie in
+            .animation(.easeInOut, value: path.isEmpty)
+            .navigationDestination(for: Int.self) { movieID in
                 MovieDetailsView(
-                    vm: container.makeMovieDetailsViewModel(movieID: movie.id)
+                    vm: container.makeMovieDetailsViewModel(movieID: movieID)
                 )
             }
             .navigationDestination(for: MovieDetailsEntity.self) { savedMovie in
@@ -33,6 +33,7 @@ struct RootView: View {
                     vm: container.makeWathchlistDetailsViewModel(movieID: savedMovie.id)
                 )
             }
+            .ignoresSafeArea(.keyboard, edges: .bottom)
         }
         .background(.skyCaptain)
     }

@@ -63,4 +63,12 @@ extension Endpoint {
             queryItems: [.init(name: "page", value: "\(page)")]
         )
     }
+    
+    static func movieSearch(query: String, page: Int) -> Endpoint {
+        Endpoint(
+            path: "/search/movie",
+            method: .get,
+            queryItems: [.init(name: "query", value: query), .init(name: "page", value: "\(page)")]
+        )
+    }
 }

@@ -42,7 +42,10 @@ final class TMDBMovieRepository: MovieRepositoryProtocol {
         return (response.results ?? []).map { $0.toDomain() }
     }
 
-//    func searchMovies(query: String, page: Int) async throws -> [Movie] {
-//        <#code#>
-//    }
+    func searchMovies(query: String, page: Int) async throws -> [MovieSearch] {
+        let response: MovieSearchList = try await client.request(
+            .movieSearch(query: query, page: page)
+        )
+        return (response.results ?? []).map { $0.toDomain() }
+    }
 }

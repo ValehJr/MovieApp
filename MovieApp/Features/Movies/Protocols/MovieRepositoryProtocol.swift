@@ -11,6 +11,6 @@ protocol MovieRepositoryProtocol {
     func fetchPopularMovies(page: Int) async throws -> [Movie]
     func fetchNowPlayingMovies(page: Int) async throws -> [Movie]
     func fetchTopRatedMovies(page: Int) async throws -> [Movie]
-    //func searchMovies(query: String, page: Int) async throws -> [Movie]
+    func searchMovies(query: String, page: Int) async throws -> [MovieSearch]
     func fetchUpcomingMovies(page: Int) async throws -> [Movie]
 }

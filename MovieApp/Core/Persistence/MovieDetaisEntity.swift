@@ -18,8 +18,8 @@ final class MovieDetailsEntity {
     var backdropPath: String
     var posterPath: String
     
-    @Relationship(deleteRule: .cascade)
-    var genres: MovieGenreEntity?
+    @Relationship(deleteRule: .nullify)
+    var genres: [MovieGenreEntity]?
     
     var localPosterURL: URL? {
         let cacheDir = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
@@ -43,7 +43,7 @@ final class MovieDetailsEntity {
         releaseDate: String,
         backdropPath: String,
         posterPath: String,
-        genres: MovieGenreEntity?
+        genres: [MovieGenreEntity]? = []
     ) {
         self.id = id
         self.overview = overview

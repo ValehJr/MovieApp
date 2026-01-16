@@ -96,7 +96,7 @@ class MovieDetailsViewModel: ObservableObject {
             movieCast = try await repository.fetchMovieCredits(id: movieID)
         } catch {
             self.error = error.localizedDescription
-            print("Faild to fetch credits of the movie: \(error)")
+            print("Failed to fetch credits of the movie: \(error)")
         }
     }
 }
@@ -110,12 +110,22 @@ extension MovieDetailsViewModel {
                 try persistence.deleteMovie(id: movieID)
                 isSaved = false
             } else {
-                let genreDTO = movieDetails.genres?.first { $0.id > 0 && !($0.name ?? "").isEmpty }
-                var genreEntity: MovieGenreEntity?
-                if let dto = genreDTO {
-                    genreEntity = MovieGenreEntity(id: dto.id, name: dto.name ?? "N/A")
+                var genreEntities: [MovieGenreEntity] = []
+                
+                if let rawGenres = movieDetails.genres {
+                    for dto in rawGenres {
+                        if let existingGenre = persistence.fetchGenre(id: dto.id) {
+                            genreEntities.append(existingGenre)
+                        } else {
+                            let newGenre = MovieGenreEntity(
+                                id: dto.id,
+                                name: dto.name ?? "N/A"
+                            )
+                            genreEntities.append(newGenre)
+                        }
+                    }
                 }
-
+                
                 let movieEntity = MovieDetailsEntity(
                     id: movieDetails.id,
                     overview: movieDetails.overview ?? "N/A",
@@ -124,16 +134,16 @@ extension MovieDetailsViewModel {
                     releaseDate: movieDetails.releaseDate ?? "N/A",
                     backdropPath: movieDetails.backdropPath ?? "N/A",
                     posterPath: movieDetails.posterPath ?? "N/A",
-                    genres: genreEntity
+                    genres: genreEntities
                 )
-
+                
                 try persistence.saveMovie(movieEntity)
                 self.isSaved = true
-
+                
                 let posterPath = movieDetails.posterPath ?? ""
                 let backdropPath = movieDetails.backdropPath ?? ""
                 let mid = movieDetails.id
-
+                
                 Task.detached(priority: .background) {
                     _ = try? await ImageCacheService.shared.downloadAndCacheImage(
                         from: "https://image.tmdb.org/t/p/w500\(posterPath)",

@@ -60,7 +60,7 @@ struct WathclistSingleView: View {
                 .foregroundStyle(.white)
                 .frame(width: 18,height: 18)
             
-            Text(movie.genres?.name ?? "Genre unavailable")
+            Text(movie.genres?.first?.name ?? "Genre unavailable")
                 .appFont(name: .poppinsRegular, size: 12,foregroundColor: .white)
         }
         

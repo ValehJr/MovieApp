@@ -10,43 +10,44 @@ import SwiftUI
 struct SearchField: View {
     @Binding var text: String
     var placeholder: String = "Search"
+    
     var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 16)
-                .frame(height: 42)
-                .foregroundStyle(.glaucophobia)
-            HStack(spacing:0) {
-                ZStack(alignment: .leading) {
-                    if text.isEmpty {
+        HStack(spacing: 0) {
+            TextField("", text: $text, prompt:
                         Text(placeholder)
-                            .appFont(name: .poppinsRegular, size: 14,foregroundColor: .midnightGrey)
-                    }
-                    TextField("", text: $text)
-                        .autocorrectionDisabled()
-                        .appFont(name: .poppinsRegular, size: 14,foregroundColor: .white)
+                .font(.custom("Poppins-Regular", size: 14))
+                .foregroundColor(.midnightGrey)
+            )
+            .autocorrectionDisabled(true)
+            .appFont(name: .poppinsRegular, size: 14, foregroundColor: .white)
+            .keyboardType(.webSearch)
+            .textInputAutocapitalization(.never)
+            .submitLabel(.search)
+            
+            Spacer()
+            
+            if !text.isEmpty {
+                Button {
+                    text = ""
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundColor(.midnightGrey)
                 }
-                
-                Spacer()
-                
-                if text.isEmpty {
-                    Image(.search)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 16,height: 16)
-                } else {
-                    Button {
-                        text = ""
-                    } label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundColor(.App.midnightGrey)
-                    }
-
-                }
+            } else {
+                Image(.search)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 16, height: 16)
             }
-            .padding(.vertical,10)
-            .padding(.leading,24)
-            .padding(.trailing,16)
         }
+        .padding(.vertical, 10)
+        .padding(.leading, 24)
+        .padding(.trailing, 16)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.glaucophobia)
+                .frame(height: 42)
+        )
     }
 }
 

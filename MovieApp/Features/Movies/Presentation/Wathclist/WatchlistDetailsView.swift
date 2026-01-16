@@ -106,7 +106,7 @@ struct WatchlistDetailsView: View {
     }
     
     private var displayGenres: String {
-        vm.movie?.genres?.name ?? vm.snapshot?.genre?.name ?? "N/A"
+        vm.movie?.genres?.first?.name ?? vm.snapshot?.genres?.first?.name ?? "N/A"
     }
 }
 
