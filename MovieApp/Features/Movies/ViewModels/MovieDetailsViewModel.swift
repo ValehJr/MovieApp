@@ -74,15 +74,15 @@ class MovieDetailsViewModel: ObservableObject {
         let page = nextPage ? reviewPage + 1 : 1
         
         do {
-            let movies = try await repository.fetchMovieReviews(id: movieID,page: reviewPage)
+            let reviews = try await repository.fetchMovieReviews(id: movieID,page: page)
             
             if page == 1 {
-                movieReviews = movies
+                movieReviews = reviews
             } else {
-                movieReviews.append(contentsOf: movies)
+                movieReviews.append(contentsOf: reviews)
             }
             
-            canLoadMore = movies.count > 0
+            canLoadMore = reviews.count > 0
             reviewPage = page
         } catch {
             self.error = error.localizedDescription

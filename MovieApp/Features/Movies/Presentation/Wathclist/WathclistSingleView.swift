@@ -30,7 +30,7 @@ struct WathclistSingleView: View {
             let uiImage = UIImage(data: imageData) {
             Image(uiImage: uiImage)
                 .resizable()
-                .aspectRatio(2/3, contentMode: .fit)
+                .aspectRatio(2/3, contentMode: .fill)
                 .frame(width: 90, height: 140)
                 .clipped()
                 .cornerRadius(8)

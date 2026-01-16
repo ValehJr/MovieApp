@@ -60,7 +60,7 @@ extension Endpoint {
         Endpoint(
             path: "/movie/\(id)/reviews",
             method: .get,
-            queryItems: []
+            queryItems: [.init(name: "page", value: "\(page)")]
         )
     }
 }
