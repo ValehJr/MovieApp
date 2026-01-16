@@ -64,3 +64,15 @@ This structure ensures scalability, testability, and maintainability across the 
 - Basic error handling
 - UI optimized for iPhone only
 
+## Screenshots
+
+<p align="center">
+  <img src="screenshots/home.png" width="24%" />
+  <img src="screenshots/search.png" width="24%" />
+  <img src="screenshots/details.png" width="24%" />
+  <img src="screenshots/persistence.png" width="24%" />
+</p>
+
+<p align="center">
+  Home · Search · Details · Saved
+</p>
