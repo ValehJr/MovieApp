@@ -57,6 +57,8 @@ The app follows a modular MVVM architecture with clear separation of concerns:
 
 This structure ensures scalability, testability, and maintainability across the app.
 
+---
+
 ## Limitations
 - No user authentication or cloud synchronization
 - Basic error handling
